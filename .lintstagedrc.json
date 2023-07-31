@@ -1,0 +1,9 @@
+{
+    "**/*.{ts,jsx,tsx}": [
+      "tsc-files --noEmit",
+      "eslint --fix",
+      "eslint --max-warnings=0",
+      "vitest related changed ",
+      "prettier --write"
+    ]
+  }

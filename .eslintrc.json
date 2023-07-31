@@ -1,0 +1,131 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "jest": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:jsx-a11y/recommended",
+        "plugin:testing-library/react",
+        "google",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["react", "jsx-a11y", "@typescript-eslint"],
+    "rules": {
+        "react/prop-types": [0],
+        "require-jsdoc": [
+            "off",
+            {
+                "require": {
+                    "FunctionDeclaration": true,
+                    "MethodDefinition": false,
+                    "ClassDeclaration": false,
+                    "ArrowFunctionExpression": false,
+                    "FunctionExpression": false
+                }
+            }
+        ],
+        "no-console": ["error", { "allow": ["warn", "error"] }],
+        //"no-console": "error",
+        "no-restricted-syntax": [
+            "error",
+            {
+                "selector": "CallExpression[callee.object.name='console'][callee.property.name!=/^(log|warn|error|info|trace)$/]",
+                "message": "Unexpected property on console object was called"
+            }
+        ],
+        "jsx-a11y/anchor-is-valid": [
+            "error",
+            {
+                "components": ["Link"],
+                "specialLink": ["hrefLeft", "hrefRight"],
+                "aspects": ["invalidHref", "preferButton"]
+            }
+        ],
+        //accessibility rules
+        "jsx-a11y/aria-role": [
+            2,
+            {
+                "allowedInvalidRoles": ["text"],
+                "ignoreNonDOM": true
+            }
+        ],
+        "role-supports-aria-props": [
+            "off",
+            {
+                "role": "button",
+                "props": ["aria-expanded"]
+            },
+            {
+                "role": "checkbox",
+                "props": ["aria-checked"]
+            },
+            {
+                "role": "menuitem",
+                "props": ["aria-checked"]
+            },
+            {
+                "role": "menuitemcheckbox",
+                "props": ["aria-checked"]
+            },
+            {
+                "role": "menuitemradio",
+                "props": ["aria-checked"]
+            },
+            {
+                "role": "option",
+                "props": ["aria-selected"]
+            },
+            {
+                "role": "radio",
+                "props": ["aria-checked"]
+            },
+            {
+                "role": "tab",
+                "props": ["aria-selected"]
+            },
+            {
+                "role": "treeitem",
+                "props": ["aria-selected"]
+            },
+            {
+                "allowedRoles": [
+                    "button",
+                    "checkbox",
+                    "link",
+                    "menuitem",
+                    "menuitemcheckbox",
+                    "menuitemradio",
+                    "option",
+                    "radio",
+                    "switch",
+                    "tab",
+                    "textbox",
+                    "treeitem"
+                ]
+            }
+        ],
+        "jsx-a11y/label-has-associated-control": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
+        "jsx-a11y/no-noninteractive-element-interactions": "off",
+        "jsx-a11y/no-static-element-interactions": "off",
+        //restrict imports
+        "no-restricted-imports": [
+            "error",
+            {
+                "patterns": ["@/features/*/*"]
+            }
+        ]
+    }
+}
