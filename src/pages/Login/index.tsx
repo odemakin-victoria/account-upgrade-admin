@@ -4,7 +4,7 @@ import { loginValidationSchema } from "./validation.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useLocation, useNavigate } from "react-router-dom";
 import UsePageTitle from "@/utils/page-title.hook";
-import { ACCOUNT_UPDATE_REQUEST, DASHBOARD_ROUTE } from "../routes-config";
+import { ACCOUNT_UPDATE_REQUEST, DASHBOARD_ROUTE_UPDATE } from "../routes-config";
 import { useLoginRequest } from "./hooks/queries.hooks";
 import { useAuthContext } from "@/utils/auth.context";
 import { useState } from "react";
@@ -24,7 +24,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   let location = useLocation();
   let navigate = useNavigate();
-  let from = location.state?.from?.pathname || DASHBOARD_ROUTE;
+  let from = location.state?.from?.pathname || DASHBOARD_ROUTE_UPDATE;
   const auth = useAuthContext();
 
   const handleSubmit = async (data: { username: string; password: string }) => {

@@ -2,7 +2,7 @@ import { adminInstance, axiosInstance } from "@/config/api"
 import { useLoginRequest } from "@/pages/Login/hooks/queries.hooks"
 import {
     ACCOUNT_UPDATE_REQUEST,
-    DASHBOARD_ROUTE,
+    DASHBOARD_ROUTE_UPDATE,
     protectedRoutes,
 } from "@/pages/routes-config"
 import { notifications } from "@mantine/notifications"

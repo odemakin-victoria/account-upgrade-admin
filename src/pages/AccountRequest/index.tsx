@@ -7,7 +7,7 @@ import {
     useDocumentUpdate,
 } from "./hooks/queries.hooks"
 import { useNavigate } from "react-router-dom"
-import { DASHBOARD_ROUTE } from "../routes-config"
+import { DASHBOARD_ROUTE_UPDATE } from "../routes-config"
 import DocumentRow from "./components/table"
 import useDocumentSelection from "./hooks/checbox-select.hooks"
 import { Button, Label, Modal } from "@/shared/components"
@@ -58,7 +58,7 @@ export default function AccountRequest() {
             <div className="flex items-center gap-6 mb-10">
                 <BiArrowBack
                     className="text-3xl"
-                    onClick={() => navigate(DASHBOARD_ROUTE)}
+                    onClick={() => navigate(DASHBOARD_ROUTE_UPDATE)}
                     role="button"
                     aria-label="goto dashboard"
                 />

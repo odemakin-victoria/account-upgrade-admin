@@ -15,3 +15,12 @@ export interface ITableRowProps
   > {
   children: ReactNode;
 }
+
+export interface SidebarLink {
+  id: number;
+  text: string;
+  isActive: boolean;
+ } 
+ export type SidebarOption = 'account-update' | 'account-upgrade';
+ 
+ 
