@@ -7,7 +7,7 @@ import {
     useDocumentUpdate,
 } from "./hooks/queries.hooks"
 import { useNavigate } from "react-router-dom"
-import { DASHBOARD_ROUTE_UPDATE } from "../routes-config"
+import { DASHBOARD_ROUTE } from "../routes-config"
 import DocumentRow from "./components/table"
 import useDocumentSelection from "./hooks/checbox-select.hooks"
 import { Button, Label, Modal } from "@/shared/components"
@@ -58,7 +58,7 @@ export default function AccountRequest() {
             <div className="flex items-center gap-6 mb-10">
                 <BiArrowBack
                     className="text-3xl"
-                    onClick={() => navigate(DASHBOARD_ROUTE_UPDATE)}
+                    onClick={() => navigate(DASHBOARD_ROUTE)}
                     role="button"
                     aria-label="goto dashboard"
                 />
@@ -77,28 +77,28 @@ export default function AccountRequest() {
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Marital Status"
-                                    content={data?.data.customer?.maritalStatus}
+                                    content={data?.data.personalDetails?.maritalStatus}
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Mother's Maiden Name"
                                     content={
-                                        data?.data.customer?.motherMaidenName
+                                        data?.data.personalDetails?.motherMaidenName
                                     }
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Name of Next of Kin"
-                                    content={data?.data.customer?.nextOfKinName}
+                                    content={data?.data.NextOfKin?.FullNameOfKin}
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Phone No. of Next of Kin"
                                     content={
-                                        data?.data.customer?.nextOfKinPhone
+                                        data?.data.NextOfKin?.PhoneNumberOfKin
                                     }
                                 />
                             </Skeleton>
@@ -106,7 +106,7 @@ export default function AccountRequest() {
                                 <DrawerCell title="Upload Photo">
                                     <img
                                         src={
-                                            data?.data.accountDocuments?.find(
+                                            data?.data.documents?.find(
                                                 (item) =>
                                                     item.documentType ===
                                                     "CUSTOMERPHOTO"
@@ -120,7 +120,7 @@ export default function AccountRequest() {
                                 <DrawerCell title="Signature">
                                     <img
                                         src={
-                                            data?.data.accountDocuments?.find(
+                                            data?.data.documents?.find(
                                                 (item) =>
                                                     item.documentType ===
                                                     "SIGNATURE"
@@ -171,7 +171,7 @@ export default function AccountRequest() {
 
                             <table className="w-full bg-gray-50">
                                 <tbody>
-                                    {data?.data.accountDocuments
+                                    {data?.data.documents
                                         ?.filter(
                                             (item) =>
                                                 item.documentType !== "DIASPORA"

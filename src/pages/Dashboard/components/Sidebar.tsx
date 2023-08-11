@@ -1,46 +1,54 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { SidebarOption } from "./types"
 import { AiOutlineUser, AiOutlineArrowUp, AiOutlineMenu } from "react-icons/ai"
-import {
-    DASHBOARD_ROUTE_UPDATE,
-    DASHBOARD_ROUTE_UPGRADE,
-} from "@/pages/routes-config"
+import { useRequestTypeContext } from "@/utils/request.context"
+// import {
+//     DASHBOARD_ROUTE_UPDATE,
+//     DASHBOARD_ROUTE_UPGRADE,
+// } from "@/pages/routes-config"
 
 const Sidebar: React.FC = () => {
-    const [activeOption, setActiveOption] =
-        useState<SidebarOption>("account-update")
+    const { setRequestType, requestType } = useRequestTypeContext()
+
+    // const [activeOption, setActiveOption] =
+    //     useState<SidebarOption>("account-update")
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const navigate = useNavigate()
 
     const handleOptionClick = (option: SidebarOption) => {
-        setActiveOption(option)
+        setRequestType(option)
+        // setActiveOption(option)
 
-        // Navigate based on the selected option
-        if (option === "account-update") {
-            navigate(`${DASHBOARD_ROUTE_UPDATE}`)
-        } else if (option === "account-upgrade") {
-            navigate(`${DASHBOARD_ROUTE_UPGRADE}`)
-        }
+        // // Navigate based on the selected option
+        // if (option === "account-update") {
+        //     navigate(`${DASHBOARD_ROUTE_UPDATE}`)
+        // } else if (option === "account-upgrade") {
+        //     navigate(`${DASHBOARD_ROUTE_UPGRADE}`)
+        // }
     }
 
     const handleMenuToggle = () => {
         setIsMenuOpen(!isMenuOpen)
     }
 
+    useEffect(() => {
+        console.log(requestType, "the request typr")
+    }, [requestType])
+
     return (
         <div className="h-full flex flex-col justify-between items-center min-h-screen sm:bg-transparent sm:shadow-none md:bg-transparent md:shadow-none lg:bg-blue-500 rounded-xl shadow-lg mt-24 ml-2">
             <div className="flex flex-col lg:pt-24  sm:mt-[-10px] sm:mx-auto md:ml-[9.5em] lg:ml-3 sm:z-50  lg:bg-transparent lg:px-0">
                 <nav
-                    className={`w-full ${ 
+                    className={`w-full ${
                         isMenuOpen ? "block" : " sm:hidden lg:block md:hidden"
-                    }  sm:bg-blue-500  sm:pt-10 sm:px-28 md:pt-10 md:px-60  lg:bg-transparent lg:px-0`} 
+                    }  sm:bg-blue-500  sm:pt-10 sm:px-28 md:pt-10 md:px-60  lg:bg-transparent lg:px-0`}
                 >
                     <ul>
                         <li className="sm:w-full">
                             <button
                                 className={`lg:py-3 lg:px-8 mb-4 w-full sm:py-0 sm:px-2 sm:w-full ${
-                                    activeOption === "account-update"
+                                    requestType === "account-update"
                                         ? "bg-blue-100 rounded-xl text-blue-500 font-bold text-lg"
                                         : "text-white font-bold"
                                 } flex items-center`}
@@ -55,7 +63,7 @@ const Sidebar: React.FC = () => {
                         <li>
                             <button
                                 className={`py-3 px-8 mb-10  w-full ${
-                                    activeOption === "account-upgrade"
+                                    requestType === "account-upgrade"
                                         ? "bg-blue-100 text-blue-500 font-bold rounded-xl text-lg"
                                         : "text-white font-bold"
                                 } flex  items-start`}
@@ -63,7 +71,7 @@ const Sidebar: React.FC = () => {
                                     handleOptionClick("account-upgrade")
                                 }
                             >
-                                <AiOutlineArrowUp className="mr-2 font-bold text-2xl text-blue-500 cursor-pointer mt-[-4px]" />
+                                <AiOutlineArrowUp className=" font-bold text-2xl text-blue-500 cursor-pointer " />
                                 <span>Account Upgrade</span>
                             </button>
                         </li>
@@ -75,6 +83,7 @@ const Sidebar: React.FC = () => {
                     className=" text-blue-500 p-2 rounded-lg "
                     onClick={handleMenuToggle}
                 >
+                    {" "}
                     {isMenuOpen ? (
                         <AiOutlineMenu className="text-2xl" />
                     ) : (

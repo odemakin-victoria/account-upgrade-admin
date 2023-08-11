@@ -1,10 +1,11 @@
-import { adminInstance } from "@/config/api";
-import { AccountRequestResponse } from "@/shared/types";
-import { useAuthContext } from "@/utils/auth.context";
-import { AxiosError } from "axios";
-import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
-import { Paginate } from "../types";
+import { axiosInstance } from "@/config/api"
+import { AccountRequestResponse } from "@/shared/types"
+import { useAuthContext } from "@/utils/auth.context"
+import { AxiosError } from "axios"
+import { useQuery } from "react-query"
+import { useParams } from "react-router-dom"
+import { Paginate } from "../types"
+import { useRequestTypeContext } from "@/utils/request.context"
 
 /**
  * Handles the fetching of all client update requests
@@ -12,62 +13,72 @@ import { Paginate } from "../types";
  * @returns useQueryFn
  */
 export const useDashboardQuery = (
-  searchQuery?: string,
-  page?: string | null
+    searchQuery?: string,
+    accountStatus?: string,
+    page?: string | null
 ) => {
-  const { user } = useAuthContext();
+    const { user } = useAuthContext()
+    const { requestType } = useRequestTypeContext()
 
-  const request = async () => {
-    const data = await adminInstance.get(`/account-update-request`, {
-      params: {
-        page: page ?? 1,
-        searchQuery,
-      },
+    const request = async () => {
+        console.log(accountStatus, "the account status in request")
 
-      headers: {
-        Authorization: `Bearer ${user?.token}`,
-      },
-    });
-    return data.data;
-  };
+        const data = await axiosInstance.get(
+            requestType == "account-update"
+                ? `api/account-update-request`
+                : `api/account-upgrade-request`,
+            {
+                params: {
+                    page: page ?? 1,
+                    searchQuery,
+                    accountStatus,
+                },
 
-  return useQuery<
-  Paginate<AccountRequestResponse>,
-  AxiosError<{
-      statusCode: number;
-      message: "string";
-      data: string[];
-    }>
-  >({
-    queryKey: ["get-account-details", page],
-    queryFn: () => request(),
-  });
-};
+                headers: {
+                    // Authorization: `Bearer ${user?.token}`,
+                },
+            }
+        )
+        return data.data
+    }
+
+    return useQuery<
+        Paginate<AccountRequestResponse>,
+        AxiosError<{
+            statusCode: number
+            message: "string"
+            data: string[]
+        }>
+    >({
+        queryKey: ["get-account-details", page],
+        queryFn: () => request(),
+    })
+}
 export const useAccountRequestQuery = () => {
-  const { user } = useAuthContext();
+    const { user } = useAuthContext()
 
-  const search = useParams();
-  const request = async () => {
-    const data = await adminInstance.get(
-      `/account-update-request/${search.accountNumber}`,
-      {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      }
-    );
-    return data.data;
-  };
+    const search = useParams()
+    const request = async () => {
+        const data = await axiosInstance.get(
+            `/api/account-request/${search.accountNumber}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${user?.token}`,
+                },
+            }
+        )
+        return data.data
+    }
 
-  return useQuery<
-    Paginate<AccountRequestResponse>,
-    AxiosError<{
-      statusCode: number;
-      message: "string";
-      data: string[];
-    }>
-  >({
-    queryKey: "get-account-details",
-    queryFn: () => request(),
-  });
-};
+    return useQuery<
+        Paginate<AccountRequestResponse>,
+        AxiosError<{
+            statusCode: number
+            message: "string"
+            data: string[]
+        }>
+    >({
+        queryKey: "get-account-details",
+        queryFn: () => request(),
+    })
+}

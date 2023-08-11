@@ -2,32 +2,38 @@ import { Input } from "@/shared/components"
 import UsePageTitle from "@/utils/page-title.hook"
 import dayjs from "dayjs"
 import { Table } from "./components"
+import Sidebar from "../Dashboard/components/Sidebar"
 import { useDashboardQuery } from "./hooks/queries.hooks"
 import loclizedFormat from "dayjs/plugin/localizedFormat"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { DASHBOARD_ROUTE } from "../routes-config"
 import { Pagination, Skeleton } from "@mantine/core"
-
+import { Tabs } from "@mantine/core"
 import { mapItemName } from "../AccountRequest/utils"
 import { useDebouncedValue } from "@mantine/hooks"
 import { useEffect, useState } from "react"
 import { AiOutlinePoweroff } from "react-icons/ai"
 import EmptyIcon from "./assets/icons/files"
 import { useAuthContext } from "@/utils/auth.context"
-import { AccountDocument, AccountRequestResponse } from "@/shared/types"
+import { Document, AccountRequestResponse } from "@/shared/types"
+import { useRequestTypeContext } from "@/utils/request.context"
 dayjs.extend(loclizedFormat)
 
 export default function Dashboard() {
+    const { requestType } = useRequestTypeContext()
     UsePageTitle("Dashboard | Submitted Forms")
     const [searchParams] = useSearchParams()
-    const [value, setvalue] = useState("")
+    const [value, setvalue] = useState("update")
+    const [status, setStatus] = useState("pending")
     const [debounced] = useDebouncedValue(value, 500, { leading: true })
     const { data, refetch, isLoading } = useDashboardQuery(
         value,
+        status,
         searchParams.get("page")
     )
     const navigate = useNavigate()
     const auth = useAuthContext()
+    const [activeTab, setActiveTab] = useState<string>("accepted") // Initial active tab
 
     useEffect(() => {
         if (debounced) {
@@ -40,10 +46,17 @@ export default function Dashboard() {
     const onChange = (pageNumber: number) => {
         navigate(`${DASHBOARD_ROUTE}/?page=${pageNumber}`)
     }
+    const handleTabChange = (tab: string) => {
+        setActiveTab(tab)
+        setStatus(tab)
+    }
+    useEffect(() => {
+        refetch()
+    }, [activeTab, requestType])
 
     function checkArrayAndMapHalf(
-        arr: AccountDocument[],
-        mapFunc: (val: AccountDocument, index: number) => void
+        arr: Document[],
+        mapFunc: (val: Document, index: number) => void
     ) {
         if (arr.length > 2) {
             const halfLength = Math.floor(arr.length / 2)
@@ -56,43 +69,37 @@ export default function Dashboard() {
         }
     }
 
-    const handleNumberOfItemsToShow = (
-        item: AccountDocument[],
-        name?: string
-    ) => {
-        let arr
-        if (name === "DIASPORA") {
-            arr = item.filter((item) => item.documentType === name)
-        } else {
-            arr = item.filter((item) => item.documentType !== "DIASPORA")
-        }
-
-        const [halfArray, remainingCount] = checkArrayAndMapHalf(
-            arr,
-            (item, index) => (
-                <span className="bg-blue-150 rounded p-2" key={index}>
-                    {mapItemName(item.documentType || "")}
-                </span>
-            )
-        )
-
-        if (arr?.length > 0) {
-            return (
-                <div className="flex items-center  gap-4">
-                    <>
-                        {halfArray}{" "}
-                        {
-                            // @ts-ignore
-                            remainingCount > 0 && (
-                                <span>{`+${remainingCount}`}</span>
-                            )
-                        }
-                    </>
-                </div>
-            )
-        }
-
-        return <p className="text-center">---</p>
+    const handleNumberOfItemsToShow = (item: Document[], name?: string) => {
+        // let arr
+        // if (name === "DIASPORA") {
+        //     arr = item.filter((item) => item.documentType === name)
+        // } else {
+        //     arr = item.filter((item) => item.documentType !== "DIASPORA")
+        // }
+        // const [halfArray, remainingCount] = checkArrayAndMapHalf(
+        //     arr,
+        //     (item, index) => (
+        //         <span className="bg-blue-150 rounded p-2" key={index}>
+        //             {mapItemName(item.documentType || "")}
+        //         </span>
+        //     )
+        // )
+        // if (arr?.length > 0) {
+        //     return (
+        //         <div className="flex items-center  gap-4">
+        //             <>
+        //                 {halfArray}{" "}
+        //                 {
+        //                     // @ts-ignore
+        //                     remainingCount > 0 && (
+        //                         <span>{`+${remainingCount}`}</span>
+        //                     )
+        //                 }
+        //             </>
+        //         </div>
+        //     )
+        // }
+        // return <p className="text-center">---</p>
     }
 
     return (
@@ -116,126 +123,208 @@ export default function Dashboard() {
                 </button>
             </div>
 
-            <div className=" w-full  pt-48 px-14">
-                <div className=" mb-6 flex justify-between items-center">
-                    <h1 className="">Submitted Forms</h1>
-
-                    <div>
-                        <Input
-                            placeholder="Search by Account Number"
-                            onChange={(e) => setvalue(e.target.value)}
-                            className="w-72"
-                        />
-                    </div>
+            <div className="flex ">
+                <div className="w-1/5">
+                    <Sidebar />
                 </div>
-                <table className="w-full text-left shadow-md mb-24 bg-white">
-                    <thead>
-                        <Table.TableRow>
-                            <Table.TableHeadCell>
-                                Account Number
-                            </Table.TableHeadCell>
-                            <Table.TableHeadCell>
-                                Customer Name
-                            </Table.TableHeadCell>
-                            <Table.TableHeadCell>BVN</Table.TableHeadCell>
-                            <Table.TableHeadCell>
-                                Marital Status
-                            </Table.TableHeadCell>
-                            <Table.TableHeadCell>
-                                Means of Identification
-                            </Table.TableHeadCell>
-                            <Table.TableHeadCell>
-                                Diaspora Documents
-                            </Table.TableHeadCell>
-                            <Table.TableHeadCell>
-                                Date Submitted
-                            </Table.TableHeadCell>
-                        </Table.TableRow>
-                    </thead>
 
-                    {isLoading ? (
-                        <>
-                            {Array(10)
-                                .fill("*")
-                                .map(() => (
-                                    <tr>
-                                        <td colSpan={10} className="p-4">
-                                            <Skeleton height={40} />
-                                        </td>
-                                    </tr>
-                                ))}
-                        </>
-                    ) : (
-                        <tbody>
-                            {(data?.data as unknown as AccountRequestResponse[])
-                                ?.length > 0 ? (
-                                (
-                                    data?.data as unknown as AccountRequestResponse[]
-                                ).map((item, index) => (
-                                    <Table.TableRow
-                                        key={index}
-                                        onClick={() =>
-                                            navigate(
-                                                `account-update-request/${item.accountNumber}`
-                                            )
-                                        }
-                                    >
-                                        <Table.TableBodyCell>
-                                            <Skeleton visible={isLoading}>
-                                                {item.accountNumber}
-                                            </Skeleton>
-                                        </Table.TableBodyCell>
-                                        <Table.TableBodyCell>
-                                            {item.customer.customerName}
-                                        </Table.TableBodyCell>
-                                        <Table.TableBodyCell>
-                                            {item.bvn}
-                                        </Table.TableBodyCell>
-                                        <Table.TableBodyCell>
-                                            {item.customer?.maritalStatus}
-                                        </Table.TableBodyCell>
+                <div className=" w-full  pt-48 px-14">
+                    <div className=" mb-6 flex justify-between items-center">
+                        <h1 className="">
+                            {requestType == "account-update"
+                                ? "Account Update"
+                                : "Account Upgrade"}
+                        </h1>
 
-                                        <Table.TableBodyCell>
-                                            {handleNumberOfItemsToShow(
-                                                item.accountDocuments
-                                            ) ?? "---"}
-                                        </Table.TableBodyCell>
-
-                                        <Table.TableBodyCell className="flex items-center  gap-4">
-                                            {handleNumberOfItemsToShow(
-                                                item.accountDocuments,
-                                                "DIASPORA"
-                                            ) ?? "---"}
-                                        </Table.TableBodyCell>
-                                        <Table.TableBodyCell>
-                                            {dayjs(item.dateCreated).format(
-                                                "LL"
-                                            )}{" "}
-                                        </Table.TableBodyCell>
-                                    </Table.TableRow>
-                                ))
-                            ) : (
-                                <Table.TableBodyCell colSpan={10}>
-                                    <div className="flex place-items-center w-full flex-col">
-                                        <EmptyIcon />
-                                        <p>No Form Available.</p>
-                                    </div>{" "}
-                                </Table.TableBodyCell>
-                            )}
-                        </tbody>
-                    )}
-                </table>
-
-                {data && data?.data?.length > 0 && (
-                    <div className="flex justify-end">
-                        <Pagination
-                            total={data ? Math.ceil(data!.totalCount / 10) : 1}
-                            className="bg-white"
-                            onChange={onChange}
-                            value={Number(searchParams.get("page")) || 1}
-                        />
+                        <div>
+                            <Input
+                                placeholder="Search by Account Number"
+                                onChange={(e) => setvalue(e.target.value)}
+                                className="w-72"
+                            />
+                        </div>
                     </div>
-                )}
+
+                    {/* <div>
+                        <button onClick={() => handleTabChange("accepted")}>
+                            Accepted
+                        </button>
+                        <button onClick={() => handleTabChange("rejected")}>
+                            Rejected
+                        </button>
+                        <button onClick={() => handleTabChange("pending")}>
+                            Pending
+                        </button>
+                    </div> */}
+                    <div className="space-x-4">
+                        <button
+                            onClick={() => handleTabChange("accepted")}
+                            className={`${
+                                activeTab === "accepted"
+                                    ? "font-semibold border-b-2 border-blue-500 text-blue-500"
+                                    : "text-gray-500"
+                            } bg-transparent border-none text-base cursor-pointer px-3 py-2 transition duration-300`}
+                        >
+                            Accepted
+                        </button>
+                        <button
+                            onClick={() => handleTabChange("rejected")}
+                            className={`${
+                                activeTab === "rejected"
+                                    ? "font-semibold border-b-2 border-blue-500 text-blue-500"
+                                    : "text-gray-500"
+                            } bg-transparent border-none text-base cursor-pointer px-3 py-2 transition duration-300`}
+                        >
+                            Rejected
+                        </button>
+                        <button
+                            onClick={() => handleTabChange("pending")}
+                            className={`${
+                                activeTab === "pending"
+                                    ? "font-semibold border-b-2 border-blue-500 text-blue-500"
+                                    : "text-gray-500"
+                            } bg-transparent border-none text-base cursor-pointer px-3 py-2 transition duration-300`}
+                        >
+                            Pending
+                        </button>
+                    </div>
+
+                    <table className="w-full text-left shadow-md mb-24 bg-white">
+                        <thead>
+                            <Table.TableRow>
+                                <Table.TableHeadCell>
+                                    Account Number
+                                </Table.TableHeadCell>
+                                {requestType !== "account-upgrade" && (
+                                    <Table.TableHeadCell>
+                                        Customer Name
+                                    </Table.TableHeadCell>
+                                )}
+                                <Table.TableHeadCell>BVN</Table.TableHeadCell>
+                                <Table.TableHeadCell>
+                                    Marital Status
+                                </Table.TableHeadCell>
+                                <Table.TableHeadCell>
+                                    Means of Identification
+                                </Table.TableHeadCell>
+                                <Table.TableHeadCell>
+                                    Diaspora Documents
+                                </Table.TableHeadCell>
+                                <Table.TableHeadCell>
+                                    Date Submitted
+                                </Table.TableHeadCell>
+                            </Table.TableRow>
+                        </thead>
+
+                        {isLoading ? (
+                            <>
+                                {Array(10)
+                                    .fill("*")
+                                    .map(() => (
+                                        <tr>
+                                            <td colSpan={10} className="p-4">
+                                                <Skeleton height={40} />
+                                            </td>
+                                        </tr>
+                                    ))}
+                            </>
+                        ) : (
+                            <tbody>
+                                {(
+                                    data?.data as unknown as AccountRequestResponse[]
+                                )?.length > 0 ? (
+                                    (
+                                        data?.data as unknown as AccountRequestResponse[]
+                                    ).map((item, index) => {
+                                        // console.log(item, "the item")
+                                        return (
+                                            <Table.TableRow
+                                                key={index}
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/api/account-request/${item.accountNumber}`
+                                                    )
+                                                }
+                                            >
+                                                <Table.TableBodyCell>
+                                                    <Skeleton
+                                                        visible={isLoading}
+                                                    >
+                                                        {item.accountNumber}
+                                                    </Skeleton>
+                                                </Table.TableBodyCell>
+
+                                                {requestType !==
+                                                    "account-upgrade" && (
+                                                    <Table.TableBodyCell>
+                                                        {`${
+                                                            item.personalDetails
+                                                                ?.firstName ??
+                                                            ""
+
+                                                        
+                                                        } ${
+                                                            item.personalDetails
+                                                                ?.lastName ?? ""
+                                                        }`}
+                                                    </Table.TableBodyCell>
+                                                )}
+
+                                                <Table.TableBodyCell>
+                                                    {item.bvn}
+                                                </Table.TableBodyCell>
+                                                <Table.TableBodyCell>
+                                                    {
+                                                        item.personalDetails
+                                                            ?.maritalStatus
+                                                    }
+                                                </Table.TableBodyCell>
+
+                                                <Table.TableBodyCell>
+                                                    {handleNumberOfItemsToShow(
+                                                        item.documents
+                                                    ) ?? "---"}
+                                                </Table.TableBodyCell>
+
+                                                <Table.TableBodyCell className="flex items-center  gap-4">
+                                                    {handleNumberOfItemsToShow(
+                                                        item.documents,
+                                                        "DIASPORA"
+                                                    ) ?? "---"}
+                                                </Table.TableBodyCell>
+                                                <Table.TableBodyCell>
+                                                    {dayjs(
+                                                        item.dateCreated
+                                                    ).format("LL")}{" "}
+                                                </Table.TableBodyCell>
+                                            </Table.TableRow>
+                                        )
+                                    })
+                                ) : (
+                                    <Table.TableBodyCell colSpan={10}>
+                                        <div className="flex place-items-center w-full flex-col">
+                                            <EmptyIcon />
+                                            <p>No Form Available.</p>
+                                        </div>{" "}
+                                    </Table.TableBodyCell>
+                                )}
+                            </tbody>
+                        )}
+                    </table>
+
+                    {data && data?.data?.length > 0 && (
+                        <div className="flex justify-end">
+                            <Pagination
+                                total={
+                                    data ? Math.ceil(data!.totalCount / 10) : 1
+                                }
+                                className="bg-white"
+                                onChange={onChange}
+                                value={Number(searchParams.get("page")) || 1}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )
