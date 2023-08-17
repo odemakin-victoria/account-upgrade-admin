@@ -12,13 +12,13 @@ export default function ContactDetails({
     if (!data) {
         return null
     }
+    const country = data.country ? data.country.toLowerCase() : '';
 
-    if (data.country.toLowerCase() === "nigeria") {
-        return <Local isLoading={isLoading} data={data} />
+    if (country === "nigeria") {
+        return <Local isLoading={isLoading} data={data} />;
     }
-    return <International isLoading={isLoading} data={data} />
+    return <International isLoading={isLoading} data={data} />;
 }
-
 const International = ({
     isLoading,
     data,
@@ -48,19 +48,19 @@ const International = ({
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Zip Code"
-                        content={data?.postalCode || "---"}
+                        content={data?.zipCode || "---"}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Address Line 1"
-                        content={`${data?.line1 ?? "---"}`}
+                        content={`${data?.addressLine1 ?? "---"}`}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Address Line 2"
-                        content={`${data?.line2 ?? "---"}`}
+                        content={`${data?.addressLine2 ?? "---"}`}
                     />
                 </Skeleton>
             </div>
@@ -82,19 +82,19 @@ const Local = ({
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Street Address"
-                        content={`${data?.line1 ?? "---"} ${data?.line2 ?? ""}`}
+                        content={`${data?.addressLine1 ?? "---"} ${data?.addressLine2 ?? ""}`}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Local Government"
-                        content={data?.localGovt || "---"}
+                        content={data?.localGovernment || "---"}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Post Code"
-                        content={data?.postalCode || "---"}
+                        content={data?.zipCode || "---"}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>

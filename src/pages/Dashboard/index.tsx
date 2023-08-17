@@ -70,36 +70,36 @@ export default function Dashboard() {
     }
 
     const handleNumberOfItemsToShow = (item: Document[], name?: string) => {
-        // let arr
-        // if (name === "DIASPORA") {
-        //     arr = item.filter((item) => item.documentType === name)
-        // } else {
-        //     arr = item.filter((item) => item.documentType !== "DIASPORA")
-        // }
-        // const [halfArray, remainingCount] = checkArrayAndMapHalf(
-        //     arr,
-        //     (item, index) => (
-        //         <span className="bg-blue-150 rounded p-2" key={index}>
-        //             {mapItemName(item.documentType || "")}
-        //         </span>
-        //     )
-        // )
-        // if (arr?.length > 0) {
-        //     return (
-        //         <div className="flex items-center  gap-4">
-        //             <>
-        //                 {halfArray}{" "}
-        //                 {
-        //                     // @ts-ignore
-        //                     remainingCount > 0 && (
-        //                         <span>{`+${remainingCount}`}</span>
-        //                     )
-        //                 }
-        //             </>
-        //         </div>
-        //     )
-        // }
-        // return <p className="text-center">---</p>
+        let arr
+        if (name === "DIASPORA") {
+            arr = item.filter((item) => item.documentType === name)
+        } else {
+            arr = item.filter((item) => item.documentType !== "DIASPORA")
+        }
+        const [halfArray, remainingCount] = checkArrayAndMapHalf(
+            arr,
+            (item, index) => (
+                <span className="bg-blue-150 rounded p-2" key={index}>
+                    {mapItemName(item.documentType || "")}
+                </span>
+            )
+        )
+        if (arr?.length > 0) {
+            return (
+                <div className="flex items-center  gap-4">
+                    <>
+                        {halfArray}{" "}
+                        {
+                            // @ts-ignore
+                            remainingCount > 0 && (
+                                <span>{`+${remainingCount}`}</span>
+                            )
+                        }
+                    </>
+                </div>
+            )
+        }
+        return <p className="text-center">---</p>
     }
 
     return (
@@ -145,17 +145,6 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* <div>
-                        <button onClick={() => handleTabChange("accepted")}>
-                            Accepted
-                        </button>
-                        <button onClick={() => handleTabChange("rejected")}>
-                            Rejected
-                        </button>
-                        <button onClick={() => handleTabChange("pending")}>
-                            Pending
-                        </button>
-                    </div> */}
                     <div className="space-x-4">
                         <button
                             onClick={() => handleTabChange("accepted")}
@@ -242,7 +231,7 @@ export default function Dashboard() {
                                                 key={index}
                                                 onClick={() =>
                                                     navigate(
-                                                        `/api/account-request/${item.accountNumber}`
+                                                        `${DASHBOARD_ROUTE}/view-account/${item.accountNumber}`
                                                     )
                                                 }
                                             >
@@ -261,8 +250,6 @@ export default function Dashboard() {
                                                             item.personalDetails
                                                                 ?.firstName ??
                                                             ""
-
-                                                        
                                                         } ${
                                                             item.personalDetails
                                                                 ?.lastName ?? ""

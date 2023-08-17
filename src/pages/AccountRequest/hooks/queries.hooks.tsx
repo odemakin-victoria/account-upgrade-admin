@@ -19,10 +19,12 @@ export const useAccountRequestQuery = () => {
     const { user } = useAuthContext()
 
     const search = useParams()
+    const { accountNo } = useParams()
+    
 
     const request = async () => {
-        const data = await axiosInstance.get(
-            `/account-update-request/${search.requestId}`,
+        const data = await axiosInstance.get<AccountRequestResponse>(
+            `/api/account-request/${accountNo}?accountNumber=${accountNo}`,
             {
                 headers: {
                     Authorization: `Bearer ${user?.token}`,
@@ -32,30 +34,47 @@ export const useAccountRequestQuery = () => {
         return data.data
     }
 
-    return useQuery<
-        AxiosResponse<AccountRequestResponse>,
-        AxiosError<{
-            statusCode: number
-            message: "string"
-            data: string[]
-        }>
-    >({
-        queryKey: ["get-account-details", search.requestId],
-        queryFn: () => request(),
-        onError: () => {
+
+    return useQuery<AccountRequestResponse, AxiosError<any>>({
+        queryKey: ['get-account-details', accountNo],
+        queryFn: request,
+        onError: (error) => {
             notifications.show({
-                message: "Unable to fetch user request!",
-                title: "An Error Occurred",
-                autoClose: 5000,
-            })
+                          message: "Unable to fetch user request!",
+                            title: "An Error Occurred",
+                             autoClose: 5000,
+                        })
         },
-    })
+    });
+
+    // return useQuery<
+    //     AxiosResponse<AccountRequestResponse>,
+    //     AxiosError<{
+    //         statusCode: number
+    //         message: "string"
+    //         data: string[]
+    //     }>
+    // >({
+    //     queryKey: ["get-account-details", search.requestId],
+    //     queryFn: () => request(),
+    //     onError: () => {
+    //         notifications.show({
+    //             message: "Unable to fetch user request!",
+    //             title: "An Error Occurred",
+    //             autoClose: 5000,
+    //         })
+    //     },
+    // })
 }
 
 export const useAccountNumberQuery = () => {
     const { user } = useAuthContext()
 
+    console.log(user)
+
     const search = useParams()
+
+    console.log(search)
     const request = async () => {
         const data = await adminInstance.get(
             `/get-by-account-number/${search.requestId}`,
@@ -90,6 +109,10 @@ export const useAccountNumberQuery = () => {
     })
 }
 
+
+
+
+
 /**
  * Custom hook for updating account documents on the server.
  * Uses `useMutation` from react-query to perform the update.
@@ -98,6 +121,8 @@ export const useAccountNumberQuery = () => {
 export const useDocumentUpdate = () => {
     const queryClient = useQueryClient()
     const { user } = useAuthContext()
+
+    const { accountNo } = useParams()
 
 
     /**
@@ -115,7 +140,8 @@ export const useDocumentUpdate = () => {
      * @returns A Promise that resolves to the updated account document.
      */
     const request = async (values: CustomerDocumentMultiple) => {
-        const data = await axiosInstance.patch(`/admin/Customer/documents`, values, {
+        console.log(values, "the values for rejection")
+        const data = await axiosInstance.patch(`/api/account-request/${accountNo}?accountNo=${accountNo}`, values, {
             headers: {
                 Authorization: `Bearer ${user?.token}`,
             },

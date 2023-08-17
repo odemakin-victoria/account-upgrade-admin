@@ -2,28 +2,26 @@
  /**
  * Represents the API response structure.
  */
- export interface ApiResponse<T> {
+export interface ApiResponse<T> {
     responseCode: string
     responseMessage: string
     data: T
 }
-
-
 
 /**
  * Represents the response structure for an account request.
  */
 export interface AccountRequestResponse {
     accountNumber: string
-    RequestType:string
+    RequestType: string
     updateStatus: string
     bvn: string | null
-    personalDetails: PersonalDetails
-    NextOfKin:NextOfKin
-    EmployeeStatus:EmployeeStatus
+    personalDetails: personalDetails
+    nextOfKin: NextOfKin
+    employeeStatus: EmployeeStatus
     contactAddress: ContactAddress
     dateCreated: string
-    documents: Document[]
+    documents: AccountDocumentResponse[]
 }
 
 /**
@@ -36,11 +34,28 @@ export interface Document {
     documentComment: string | null
 }
 
+export interface AccountDocumentUpdate extends Document {
+    document: string[]
+    email: string
+}
+
+/**
+ * Represents multiple customer documents.
+ */
+
+export interface CustomerDocumentMultiple {
+    email?: string
+    status?: string
+    comment: string
+   
+}
+
 /**
  * Represents an account document with additional response-specific properties.
  */
 export interface AccountDocumentResponse extends Document {
     documentId: string
+    filePath: string
     dateCreated: string
     dateLastModified: string
 }
@@ -50,7 +65,7 @@ export interface AccountDocumentResponse extends Document {
  */
 export interface AccountDocumentRequest {
     documentId: string
-    document: File,
+    document: File
     documentName?: string
     documentType?: string
 }
@@ -62,22 +77,22 @@ export interface ContactAddress {
     contactAddressId: string
     country: string
     city: string
-    postalCode?: string
-    localGovt: string
+    zipCode: string
+    localGovernment: string
     state: string
-    line1?: string
-    line2?: string
-    countryOfTaxResidence:string
-    foreignTaxId:string
-    mobileNumber:string
-    TaxAddress1:string
-    TaxAddress2:string
-    secondCountry:string
+    addressLine1: string
+    addressLine2: string
+    countryOfTaxResidence: string
+    foreignTaxId: string
+    mobileNumber: string
+    TaxAddress1: string
+    TaxAddress2: string
+    secondCountry: string
+    streetAddress: string
+    streetName: string
     dateCreated?: Date
     dateLastModified?: Date
-
 }
-
 
 /**
  * Represents an updated contact address.
@@ -86,20 +101,18 @@ export interface ContactAddressUpdate extends ContactAddress {
     contactAddressId: string
 }
 
-
 /**
  * Represents the customer personal information.
  */
-export interface PersonalDetails {
-    customerId: string
-    title:string
+export interface personalDetails {
+    personalDetailsId: string
+    title: string
     maritalStatus: string
     motherMaidenName: string
     firstName: string
-    lastName:string
-    MiddleName:string
-    DOB:string
-    customerName:string
+    lastName: string
+    middleName: string
+    DOB: string
     dateCreated: Date
     dateLastModified: Date
 }
@@ -107,15 +120,15 @@ export interface PersonalDetails {
  * Represents the next of kin personal information.
  */
 export interface NextOfKin {
-    FullNameOfKin: string
+    fullName: string
     RelationshipOfKin: string
-    DobOfKin:string
-    PhoneNumberOfKin: string
+    DobOfKin: string
+    phoneNumber: string
     HouseNumberOfKin: string
     StateOfKin: string
-    StreetNameOfKin:string
-    LocalGovernmentOfKin:string
-    PostalZipCodeOfKin:string
+    StreetNameOfKin: string
+    LocalGovernmentOfKin: string
+    PostalZipCodeOfKin: string
     dateCreated: Date
     dateLastModified: Date
 }
@@ -138,7 +151,6 @@ export enum DocumentType {
     Proofofadress = "PROOFOFADRESS",
     Signature = "SIGNATURE",
 }
-
 
 /**
  * Enumerates the possible statuses of a document.

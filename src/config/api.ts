@@ -4,7 +4,7 @@
         baseURL: `${import.meta.env.VITE_BASE_API_URL}`,
     })
     export const adminInstance = axios.create({
-        baseURL: `${import.meta.env.VITE_BASE_API_URL}/admin`,
+        baseURL: `http://localhost:5214/api/admin`,
     })
 
 

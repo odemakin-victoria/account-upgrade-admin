@@ -7,6 +7,7 @@ import {
     ROOT_ROUTE,
     DASHBOARD_ROUTE,
     ACCOUNT_UPDATE_REQUEST,
+    VIEWACCOUNT,
 } from "./pages/routes-config"
 import { RequestTypeProvider } from "./utils/request.context"
 
@@ -18,6 +19,10 @@ function App() {
                     <Routes>
                         <Route path={ROOT_ROUTE} element={<Dashboard />} />
                         <Route path={DASHBOARD_ROUTE} element={<Dashboard />} />
+                        <Route
+                            path={VIEWACCOUNT}
+                            element={<AccountRequest />}
+                        />
                         <Route
                             path={ACCOUNT_UPDATE_REQUEST}
                             element={<AccountRequest />}

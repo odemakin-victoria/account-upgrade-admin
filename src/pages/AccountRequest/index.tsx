@@ -2,11 +2,11 @@ import { useReducer, useState } from "react"
 import { DrawerCell } from "../Dashboard/components/drawer"
 import { BiArrowBack } from "react-icons/bi"
 import {
-    useAccountNumberQuery,
+    // useAccountNumberQuery,
     useAccountRequestQuery,
     useDocumentUpdate,
 } from "./hooks/queries.hooks"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { DASHBOARD_ROUTE } from "../routes-config"
 import DocumentRow from "./components/table"
 import useDocumentSelection from "./hooks/checbox-select.hooks"
@@ -20,9 +20,11 @@ import ContactDetails from "./components/contact-details"
 
 export default function AccountRequest() {
     const { data, isLoading } = useAccountRequestQuery()
+    const [comment, setComment] = useState("")
     const [document, setDocument] = useState<string | null>(null)
     const [isImgLoaded, setIsImgLoaded] = useState(false)
-    const accountNoQuery = useAccountNumberQuery()
+    // const accountNoQuery = useAccountNumberQuery()
+    // console.log("accountnoquery", accountNoQuery)
 
     const { selectDocument, selectedIds, clearSelection } =
         useDocumentSelection()
@@ -46,10 +48,10 @@ export default function AccountRequest() {
         clearSelection()
 
         mutate({
-            documentComment: value.documentComment,
-            documentIds: selectedIds as string[],
-            documentStatus: status,
-            email: accountNoQuery.data?.data.emailId as string,
+            status,
+            comment: comment,
+
+            // email: accountNoQuery.data?.data.emailId as string,
         })
     }
 
@@ -77,36 +79,36 @@ export default function AccountRequest() {
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Marital Status"
-                                    content={data?.data.personalDetails?.maritalStatus}
+                                    content={
+                                        data?.personalDetails?.maritalStatus
+                                    }
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Mother's Maiden Name"
                                     content={
-                                        data?.data.personalDetails?.motherMaidenName
+                                        data?.personalDetails?.motherMaidenName
                                     }
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Name of Next of Kin"
-                                    content={data?.data.NextOfKin?.FullNameOfKin}
+                                    content={data?.nextOfKin?.fullName}
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Phone No. of Next of Kin"
-                                    content={
-                                        data?.data.NextOfKin?.PhoneNumberOfKin
-                                    }
+                                    content={data?.nextOfKin?.phoneNumber}
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell title="Upload Photo">
                                     <img
                                         src={
-                                            data?.data.documents?.find(
+                                            data?.documents?.find(
                                                 (item) =>
                                                     item.documentType ===
                                                     "CUSTOMERPHOTO"
@@ -120,7 +122,7 @@ export default function AccountRequest() {
                                 <DrawerCell title="Signature">
                                     <img
                                         src={
-                                            data?.data.documents?.find(
+                                            data?.documents?.find(
                                                 (item) =>
                                                     item.documentType ===
                                                     "SIGNATURE"
@@ -132,7 +134,10 @@ export default function AccountRequest() {
                             </Skeleton>
                         </div>
                     </div>
-                    <ContactDetails isLoading={isLoading} data={data?.data.contactAddress}/>
+                    <ContactDetails
+                        isLoading={isLoading}
+                        data={data?.contactAddress}
+                    />
                     <div className="mb-14 ">
                         <div className="pr-10 centered-line bg-white mb-8">
                             <h2 className="text-lg mb-4 ">
@@ -171,7 +176,7 @@ export default function AccountRequest() {
 
                             <table className="w-full bg-gray-50">
                                 <tbody>
-                                    {data?.data.documents
+                                    {data?.documents
                                         ?.filter(
                                             (item) =>
                                                 item.documentType !== "DIASPORA"
@@ -205,7 +210,7 @@ export default function AccountRequest() {
 
                         <table className="w-full bg-gray-50">
                             <tbody>
-                                {data?.data.accountDocuments
+                                {data?.documents
                                     ?.filter(
                                         (item) =>
                                             item.documentType === "DIASPORA"
@@ -265,14 +270,17 @@ export default function AccountRequest() {
                 <Controller
                     name="documentComment"
                     control={methods.control}
-                    render={({ field: { value, ...restField } }) => (
-                        <textarea
-                            {...restField}
-                            value={value as string}
-                            className="w-full bg-gray-100 p-4 resize-none"
-                            rows={10}
-                        />
-                    )}
+                    render={({ field: { value, ...restField } }) => {
+                        setComment(value)
+                        return (
+                            <textarea
+                                {...restField}
+                                value={value as string}
+                                className="w-full bg-gray-100 p-4 resize-none"
+                                rows={10}
+                            />
+                        )
+                    }}
                 />
                 <div className="flex items-center gap-6 mt-6">
                     <Button
