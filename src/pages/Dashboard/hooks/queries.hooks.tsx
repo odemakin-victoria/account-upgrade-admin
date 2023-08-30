@@ -54,14 +54,20 @@ export const useDashboardQuery = (
         queryFn: () => request(),
     })
 }
-export const useAccountRequestQuery = () => {
+
+
+export const useAccountRequestQuery = (accountNumber?:   string | null) => {
     const { user } = useAuthContext()
 
-    const search = useParams()
+  
+    const { requestType } = useRequestTypeContext()
     const request = async () => {
         const data = await axiosInstance.get(
-            `/api/account-request/${search.accountNumber}`,
-            {
+            requestType == "account-update"
+            ? `/api/single-update-request/${accountNumber}?accountNumber=${accountNumber}`
+            : `/api/single-upgrade-request/${accountNumber}?accountNumber=${accountNumber}`,
+            { 
+             
                 headers: {
                     Authorization: `Bearer ${user?.token}`,
                 },

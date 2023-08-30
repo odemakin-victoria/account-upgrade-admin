@@ -17,6 +17,8 @@ import { IUpdateDocument } from "./hooks/types"
 import { reducer } from "./utils"
 import { Loader, Skeleton } from "@mantine/core"
 import ContactDetails from "./components/contact-details"
+import headerOptimusLogo from "@/shared/assets/images/Optimus_Logo.svg"
+
 
 export default function AccountRequest() {
     const { data, isLoading } = useAccountRequestQuery()
@@ -64,10 +66,10 @@ export default function AccountRequest() {
                     role="button"
                     aria-label="goto dashboard"
                 />
-                <img
-                    src="https://optimusbank.com/assets/images/header/Optimus_Logo.svg"
-                    alt="logo"
-                />
+                 <img
+                                src={headerOptimusLogo}
+                                alt="optimus_bank_logo"
+                            />
             </div>
             <div className="lg:grid grid-cols-2 items-center">
                 <main className="p-4 pr-6">
@@ -80,7 +82,9 @@ export default function AccountRequest() {
                                 <DrawerCell
                                     title="Marital Status"
                                     content={
-                                        data?.personalDetails?.maritalStatus
+                                        data?.personalDetails?.maritalStatus !== undefined
+                                            ? data?.personalDetails?.maritalStatus
+                                            : '---'
                                     }
                                 />
                             </Skeleton>
@@ -88,20 +92,33 @@ export default function AccountRequest() {
                                 <DrawerCell
                                     title="Mother's Maiden Name"
                                     content={
-                                        data?.personalDetails?.motherMaidenName
+                                        data?.personalDetails?.motherMaidenName !== undefined
+                                            ? data?.personalDetails?.motherMaidenName
+                                            : '---'
                                     }
+                                 
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Name of Next of Kin"
-                                    content={data?.nextOfKin?.fullName}
+                                    content={
+                                        data?.nextOfKin?.fullName !== "undefined"
+                                            ? data?.nextOfKin?.fullName
+                                            : '---'
+                                    }
+                                   
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title="Phone No. of Next of Kin"
-                                    content={data?.nextOfKin?.phoneNumber}
+                                    content={
+                                        !data?.nextOfKin?.phoneNumber || data?.nextOfKin?.phoneNumber == "undefined"
+                                            ? '---'
+                                           : data?.nextOfKin?.phoneNumber
+                                             
+                                    }
                                 />
                             </Skeleton>
                             <Skeleton visible={isLoading}>
@@ -112,7 +129,7 @@ export default function AccountRequest() {
                                                 (item) =>
                                                     item.documentType ===
                                                     "CUSTOMERPHOTO"
-                                            )?.filePath || "---"
+                                            )?.filePath || '---'
                                         }
                                         alt="user"
                                     />
@@ -126,7 +143,7 @@ export default function AccountRequest() {
                                                 (item) =>
                                                     item.documentType ===
                                                     "SIGNATURE"
-                                            )?.filePath || "---"
+                                            )?.filePath || '---'
                                         }
                                         alt="signature file"
                                     />

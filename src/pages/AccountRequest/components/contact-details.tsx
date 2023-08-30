@@ -1,5 +1,5 @@
 import { DrawerCell } from "@/pages/Dashboard/components/drawer"
-import { ContactAddress } from "@/shared/types"
+import { contactAddress } from "@/shared/types"
 import { Skeleton } from "@mantine/core"
 
 export default function ContactDetails({
@@ -7,24 +7,28 @@ export default function ContactDetails({
     data,
 }: {
     isLoading: boolean
-    data?: ContactAddress
+    data?: contactAddress
 }) {
     if (!data) {
         return null
     }
     const country = data.country ? data.country.toLowerCase() : '';
+    
 
-    if (country === "nigeria") {
+    if (country !== "nigeria") {
         return <Local isLoading={isLoading} data={data} />;
     }
+else{
     return <International isLoading={isLoading} data={data} />;
+}
+  
 }
 const International = ({
     isLoading,
     data,
 }: {
     isLoading: boolean
-    data: ContactAddress
+    data: contactAddress
 }) => {
     return (
         <div className="mb-14">
@@ -71,10 +75,12 @@ const International = ({
 const Local = ({
     isLoading,
     data,
+    
 }: {
     isLoading: boolean
-    data: ContactAddress
+    data: contactAddress
 }) => {
+    console.log(data)
     return (
         <div className="mb-14">
             <h2 className="text-lg mb-4 centered-line">Contact Details</h2>
@@ -82,14 +88,16 @@ const Local = ({
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Street Address"
-                        content={`${data?.addressLine1 ?? "---"} ${data?.addressLine2 ?? ""}`}
+                        content={`${data?.houseNumber !== "undefined" ? data?.houseNumber  : " "  } ${data?.streetAddress ?? "---"}`}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Local Government"
                         content={data?.localGovernment || "---"}
+                        
                     />
+                    
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell

@@ -17,7 +17,7 @@ function App() {
             <AuthProvider>
                 <RequestTypeProvider>
                     <Routes>
-                        <Route path={ROOT_ROUTE} element={<Dashboard />} />
+                        <Route path={ROOT_ROUTE} element={<Login />} />
                         <Route path={DASHBOARD_ROUTE} element={<Dashboard />} />
                         <Route
                             path={VIEWACCOUNT}

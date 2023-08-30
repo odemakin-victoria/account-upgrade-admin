@@ -68,8 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 password,
             })
 
-            console.log(res, "await")
-            if (res.responseCode === "200") {
+            if (res.responseCode === "00") {
                 setIsAuthenticated({
                     isAuthenticated: true,
                     token: res.data.accessToken,
@@ -80,25 +79,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } catch (error: any) {
             notifications.show({
                 title: "Error!",
-                message: error.response?.data.responseMessage ?? "An Error occurred, please try again later",
+                message:
+                    error.response?.data.responseMessage ??
+                    "An Error occurred, please try again later",
                 styles: (theme) => ({
                     root: {
                         backgroundColor: theme.colors.red[8],
-                        border:"transparent",
-                        '&::before': { backgroundColor: theme.white },
+                        border: "transparent",
+                        "&::before": { backgroundColor: theme.white },
                     },
                     description: {
                         color: "white",
                     },
                     title: {
                         color: "white",
-                        fontWeight:"bold"
+                        fontWeight: "bold",
                     },
-                    
-
                 }),
-                color: 'white',
-                withCloseButton:false,
+                color: "white",
+                withCloseButton: false,
                 autoClose: 5000,
             })
         }

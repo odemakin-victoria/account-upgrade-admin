@@ -3,7 +3,10 @@ import UsePageTitle from "@/utils/page-title.hook"
 import dayjs from "dayjs"
 import { Table } from "./components"
 import Sidebar from "../Dashboard/components/Sidebar"
-import { useDashboardQuery } from "./hooks/queries.hooks"
+import {
+    useDashboardQuery,
+    useAccountRequestQuery,
+} from "./hooks/queries.hooks"
 import loclizedFormat from "dayjs/plugin/localizedFormat"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { DASHBOARD_ROUTE } from "../routes-config"
@@ -17,12 +20,17 @@ import EmptyIcon from "./assets/icons/files"
 import { useAuthContext } from "@/utils/auth.context"
 import { Document, AccountRequestResponse } from "@/shared/types"
 import { useRequestTypeContext } from "@/utils/request.context"
+import { Paginate } from "./types"
+import headerOptimusLogo from "@/shared/assets/images/Optimus_Logo.svg"
 dayjs.extend(loclizedFormat)
 
 export default function Dashboard() {
     const { requestType } = useRequestTypeContext()
     UsePageTitle("Dashboard | Submitted Forms")
     const [searchParams] = useSearchParams()
+    const accountRequestQuery = useAccountRequestQuery(
+        searchParams.get("accountNumber")
+    )
     const [value, setvalue] = useState("update")
     const [status, setStatus] = useState("pending")
     const [debounced] = useDebouncedValue(value, 500, { leading: true })
@@ -31,9 +39,13 @@ export default function Dashboard() {
         status,
         searchParams.get("page")
     )
+    const [allData, setAllData] = useState<any>(data)
+
     const navigate = useNavigate()
     const auth = useAuthContext()
     const [activeTab, setActiveTab] = useState<string>("accepted") // Initial active tab
+    const [showPassword, setShowPassword] = useState(false); // State to control password visibility
+
 
     useEffect(() => {
         if (debounced) {
@@ -42,10 +54,35 @@ export default function Dashboard() {
             refetch()
         }
     }, [debounced])
+    useEffect(() => {
+        setAllData(data)
+    }, [data])
 
     const onChange = (pageNumber: number) => {
         navigate(`${DASHBOARD_ROUTE}/?page=${pageNumber}`)
     }
+    const [filteredData, setFilteredData] = useState<AccountRequestResponse[]>([]);
+
+    const handleAccountNumberSearch = () => {
+        const accountNumber = searchParams.get("accountNumber");
+        if (accountNumber && allData?.data) {
+            const filteredItems = allData.data.filter(
+                (item: { accountNumber: string }) => item.accountNumber === accountNumber
+            );
+            setFilteredData(filteredItems);
+        } else {
+            setFilteredData([]);
+        }
+    };
+
+    useEffect(() => {
+        handleAccountNumberSearch();
+    }, [searchParams.get("accountNumber"), allData?.data]);
+
+    // useEffect(() => {
+    //     accountRequestQuery.refetch()
+    // }, [searchParams.get("accountNumber")])
+
     const handleTabChange = (tab: string) => {
         setActiveTab(tab)
         setStatus(tab)
@@ -102,13 +139,21 @@ export default function Dashboard() {
         return <p className="text-center">---</p>
     }
 
+    const itemsPerPage = 10;
+    const currentPage = Number(searchParams.get("page")) || 1;
+
+    const startIdx = (currentPage - 1) * itemsPerPage;
+    const endIdx = startIdx + itemsPerPage;
+
+    const currentPageData = allData?.data?.slice(startIdx, endIdx) || [];
+
     return (
-        <div className=" bg-blue-100 pb-6 min-h-screen">
-            <div className="w-full justify-between items-center flex bg-white drop-shadow-md fixed h-16 top-0 px-10">
-                <img
-                    src="https://optimusbank.com/assets/images/header/Optimus_Logo.svg"
-                    alt="logo"
-                />
+        <div className=" bg-blue-100 pb-6 min-h-screen w-full">
+            <div className="w-full justify-between items-center flex bg-white drop-shadow-md fixed h-16 top-0 px-10 z-30">
+            <img
+                                src={headerOptimusLogo}
+                                alt="optimus_bank_logo"
+                            />
 
                 <button
                     type="button"
@@ -130,18 +175,30 @@ export default function Dashboard() {
 
                 <div className=" w-full  pt-48 px-14">
                     <div className=" mb-6 flex justify-between items-center">
-                        <h1 className="">
+                        <h1 className="mt-[-20px]">
                             {requestType == "account-update"
                                 ? "Account Update"
                                 : "Account Upgrade"}
                         </h1>
 
-                        <div>
+                        <div className=" mb-6 flex justify-between items-center">
                             <Input
                                 placeholder="Search by Account Number"
-                                onChange={(e) => setvalue(e.target.value)}
+                                onChange={(e) => {
+                                    searchParams.set(
+                                        "accountNumber",
+                                        e.target.value
+                                    )
+                                }}
+                                // onChange={(e) => {
+                                //     searchParams.set("accountNumber", e.target.value)
+                                // }}
                                 className="w-72"
                             />
+                            <button onClick={()=>handleAccountNumberSearch()} className="bg-blue-500 text-white py-3 px-4 rounded-lg ml-4">
+                                {" "}
+                                Enter
+                            </button>
                         </div>
                     </div>
 
@@ -189,7 +246,11 @@ export default function Dashboard() {
                                         Customer Name
                                     </Table.TableHeadCell>
                                 )}
-                                <Table.TableHeadCell>BVN</Table.TableHeadCell>
+                                {requestType !== "account-update" && (
+                                    <Table.TableHeadCell>
+                                        BVN
+                                    </Table.TableHeadCell>
+                                )}
                                 <Table.TableHeadCell>
                                     Marital Status
                                 </Table.TableHeadCell>
@@ -217,13 +278,75 @@ export default function Dashboard() {
                                         </tr>
                                     ))}
                             </>
-                        ) : (
+                        ) :  (
                             <tbody>
-                                {(
-                                    data?.data as unknown as AccountRequestResponse[]
-                                )?.length > 0 ? (
+                                  {filteredData.length > 0 ? (
+        filteredData.map((item, index) => (
+            <Table.TableRow
+                key={index}
+                onClick={() =>
+                    navigate(
+                        `${DASHBOARD_ROUTE}/view-account/${item.accountNumber}`
+                    )
+                }
+            >
+                <Table.TableBodyCell>
+                                                    <Skeleton
+                                                        visible={isLoading}
+                                                    >
+                                                        {item.accountNumber}
+                                                    </Skeleton>
+                                                </Table.TableBodyCell>
+
+                                                {requestType !==
+                                                    "account-upgrade" && (
+                                                    <Table.TableBodyCell>
+                                                        {`${
+                                                            item.personalDetails
+                                                                ?.firstName ??
+                                                            ""
+                                                        } ${
+                                                            item.personalDetails
+                                                                ?.lastName ?? ""
+                                                        }`}
+                                                    </Table.TableBodyCell>
+                                                )}
+                                                {requestType !==
+                                                    "account-update" && (
+                                                    <Table.TableBodyCell>
+                                                        {item.bvn}
+                                                    </Table.TableBodyCell>
+                                                )}
+                                                <Table.TableBodyCell>
+                                                    {
+                                                        item.personalDetails
+                                                            ?.maritalStatus
+                                                    }
+                                                </Table.TableBodyCell>
+
+                                                <Table.TableBodyCell>
+                                                    {handleNumberOfItemsToShow(
+                                                        item.documents
+                                                    ) ?? "---"}
+                                                </Table.TableBodyCell>
+
+                                                <Table.TableBodyCell className="flex items-center  gap-4">
+                                                    {handleNumberOfItemsToShow(
+                                                        item.documents,
+                                                        "DIASPORA"
+                                                    ) ?? "---"}
+                                                </Table.TableBodyCell>
+                                                <Table.TableBodyCell>
+                                                    {dayjs(
+                                                        item.dateCreated
+                                                    ).format("LL")}{" "}
+                                                </Table.TableBodyCell>
+            </Table.TableRow>
+        ))
+    ):
+    allData && allData?.data?.length > 0 ?(
                                     (
-                                        data?.data as unknown as AccountRequestResponse[]
+                                        allData?.data as unknown as AccountRequestResponse[]
                                     ).map((item, index) => {
                                         // console.log(item, "the item")
                                         return (
@@ -256,10 +379,12 @@ export default function Dashboard() {
                                                         }`}
                                                     </Table.TableBodyCell>
                                                 )}
-
-                                                <Table.TableBodyCell>
-                                                    {item.bvn}
-                                                </Table.TableBodyCell>
+                                                {requestType !==
+                                                    "account-update" && (
+                                                    <Table.TableBodyCell>
+                                                        {item.bvn}
+                                                    </Table.TableBodyCell>
+                                                )}
                                                 <Table.TableBodyCell>
                                                     {
                                                         item.personalDetails
@@ -287,30 +412,43 @@ export default function Dashboard() {
                                             </Table.TableRow>
                                         )
                                     })
-                                ) : (
+                               ) : (
                                     <Table.TableBodyCell colSpan={10}>
                                         <div className="flex place-items-center w-full flex-col">
                                             <EmptyIcon />
                                             <p>No Form Available.</p>
                                         </div>{" "}
                                     </Table.TableBodyCell>
-                                )}
-                            </tbody>
-                        )}
+                                )}</tbody>
+                                )}  
                     </table>
 
-                    {data && data?.data?.length > 0 && (
+                      {/* Always show the pagination */}
+            <div className="flex justify-end">
+                <Pagination
+                    total={Math.ceil((allData?.totalCount || 1) / itemsPerPage)}
+                    className="bg-white"
+                    onChange={onChange}
+                    value={currentPage}
+                   
+                />
+            </div>
+           
+{/* 
+                     {allData && allData?.data?.length > 0 && (
                         <div className="flex justify-end">
                             <Pagination
                                 total={
-                                    data ? Math.ceil(data!.totalCount / 10) : 1
+                                    allData
+                                        ? Math.ceil(allData!.totalCount / 10)
+                                        : 1
                                 }
                                 className="bg-white"
                                 onChange={onChange}
                                 value={Number(searchParams.get("page")) || 1}
                             />
                         </div>
-                    )}
+                    )}  */}
                 </div>
             </div>
         </div>

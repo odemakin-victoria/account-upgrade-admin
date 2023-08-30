@@ -19,7 +19,7 @@ export interface AccountRequestResponse {
     personalDetails: personalDetails
     nextOfKin: NextOfKin
     employeeStatus: EmployeeStatus
-    contactAddress: ContactAddress
+    contactAddress: contactAddress
     dateCreated: string
     documents: AccountDocumentResponse[]
 }
@@ -73,8 +73,7 @@ export interface AccountDocumentRequest {
 /**
  * Represents the contact address information.
  */
-export interface ContactAddress {
-    contactAddressId: string
+export interface contactAddress {
     country: string
     city: string
     zipCode: string
@@ -82,22 +81,19 @@ export interface ContactAddress {
     state: string
     addressLine1: string
     addressLine2: string
-    countryOfTaxResidence: string
-    foreignTaxId: string
-    mobileNumber: string
-    TaxAddress1: string
-    TaxAddress2: string
-    secondCountry: string
     streetAddress: string
-    streetName: string
-    dateCreated?: Date
-    dateLastModified?: Date
+    houseNumber:string
+    dateCreated: Date
+    dateLastModified: Date
+
+    requestId: string
+    
 }
 
 /**
  * Represents an updated contact address.
  */
-export interface ContactAddressUpdate extends ContactAddress {
+export interface ContactAddressUpdate extends contactAddress {
     contactAddressId: string
 }
 
@@ -138,6 +134,17 @@ export interface EmployeeStatus {
     NatureOfBusiness: string
     NumberofYears: string
     AnnualIncome: string
+    dateCreated?: Date
+    dateLastModified?: Date
+}
+
+export interface Citizenship {
+    foreignTaxId: string
+    countryTaxResidence: string
+    mobileNumber: string
+    addressLine1: string
+    addressLine2: string
+    country: string
     dateCreated?: Date
     dateLastModified?: Date
 }

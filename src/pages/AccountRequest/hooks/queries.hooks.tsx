@@ -20,7 +20,6 @@ export const useAccountRequestQuery = () => {
 
     const search = useParams()
     const { accountNo } = useParams()
-    
 
     const request = async () => {
         const data = await axiosInstance.get<AccountRequestResponse>(
@@ -34,18 +33,17 @@ export const useAccountRequestQuery = () => {
         return data.data
     }
 
-
     return useQuery<AccountRequestResponse, AxiosError<any>>({
-        queryKey: ['get-account-details', accountNo],
+        queryKey: ["get-account-details", accountNo],
         queryFn: request,
         onError: (error) => {
             notifications.show({
-                          message: "Unable to fetch user request!",
-                            title: "An Error Occurred",
-                             autoClose: 5000,
-                        })
+                message: "Unable to fetch user request!",
+                title: "An Error Occurred",
+                autoClose: 5000,
+            })
         },
-    });
+    })
 
     // return useQuery<
     //     AxiosResponse<AccountRequestResponse>,
@@ -67,51 +65,47 @@ export const useAccountRequestQuery = () => {
     // })
 }
 
-export const useAccountNumberQuery = () => {
-    const { user } = useAuthContext()
+// export const useAccountNumberQuery = () => {
+//     const { user } = useAuthContext()
 
-    console.log(user)
+//     console.log(user)
 
-    const search = useParams()
+//     const search = useParams()
 
-    console.log(search)
-    const request = async () => {
-        const data = await adminInstance.get(
-            `/get-by-account-number/${search.requestId}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${user?.token}`,
-                },
-            }
-        )
-        return data.data
-    }
+//     console.log(search)
+//     const request = async () => {
+//         const data = await adminInstance.get(
+//             `/get-by-account-number/${search.requestId}`,
+//             {
+//                 headers: {
+//                     Authorization: `Bearer ${user?.token}`,
+//                 },
+//             }
+//         )
+//         return data.data
+//     }
 
-    return useQuery<
-        AxiosResponse<{
-            emailId: string
-        }>,
-        AxiosError<{
-            statusCode: number
-            message: "string"
-            data: string[]
-        }>
-    >({
-        queryKey: ["get-account-info", search.requestId],
-        queryFn: () => request(),
-        onError: () => {
-            notifications.show({
-                message: "Unable to fetch user request!",
-                title: "An Error Occurred",
-                autoClose: 5000,
-            })
-        },
-    })
-}
-
-
-
-
+//     return useQuery<
+//         AxiosResponse<{
+//             emailId: string
+//         }>,
+//         AxiosError<{
+//             statusCode: number
+//             message: "string"
+//             data: string[]
+//         }>
+//     >({
+//         queryKey: ["get-account-info", search.requestId],
+//         queryFn: () => request(),
+//         onError: () => {
+//             notifications.show({
+//                 message: "Unable to fetch user request!",
+//                 title: "An Error Occurred",
+//                 autoClose: 5000,
+//             })
+//         },
+//     })
+// }
 
 /**
  * Custom hook for updating account documents on the server.
@@ -123,7 +117,6 @@ export const useDocumentUpdate = () => {
     const { user } = useAuthContext()
 
     const { accountNo } = useParams()
-
 
     /**
      * Retrieves the token from the URL query parameters.
@@ -141,11 +134,25 @@ export const useDocumentUpdate = () => {
      */
     const request = async (values: CustomerDocumentMultiple) => {
         console.log(values, "the values for rejection")
-        const data = await axiosInstance.patch(`/api/account-request/${accountNo}?accountNo=${accountNo}`, values, {
-            headers: {
-                Authorization: `Bearer ${user?.token}`,
-            },
-        })
+
+        const formData = new FormData()
+
+        const valueKeys = Object.values(values)
+        const fieldKeys = Object.keys(values)
+
+        for (let i = 0; i < valueKeys.length; i++) {
+            formData.append(fieldKeys[i], valueKeys[i])
+        }
+        const data = await axiosInstance.patch(
+            `/api/update-account-request/${accountNo}?accountNo=${accountNo}`,
+            formData
+            ,
+            {
+                headers: {
+                    Authorization: `Bearer ${user?.token}`,
+                },
+            }
+        )
         return data.data
     }
 
