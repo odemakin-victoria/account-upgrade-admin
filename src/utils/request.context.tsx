@@ -6,12 +6,12 @@ interface RequestContextData {
 }
 
 export const RequestTypeContext = createContext<RequestContextData>({
-    requestType: "account-update",
+    requestType: "update",
     setRequestType: (val: string) => {},
 })
 
 export const RequestTypeProvider = ({ children }: { children: ReactNode }) => {
-    const [requestType, setRequestType] = useState("account-update")
+    const [requestType, setRequestType] = useState("update")
 
     const value = {
         requestType,

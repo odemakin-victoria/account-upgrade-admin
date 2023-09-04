@@ -21,10 +21,10 @@ export const useDashboardQuery = (
     const { requestType } = useRequestTypeContext()
 
     const request = async () => {
-        console.log(accountStatus, "the account status in request")
+        
 
         const data = await axiosInstance.get(
-            requestType == "account-update"
+            requestType == "update"
                 ? `api/account-update-request`
                 : `api/account-upgrade-request`,
             {
@@ -35,7 +35,7 @@ export const useDashboardQuery = (
                 },
 
                 headers: {
-                    // Authorization: `Bearer ${user?.token}`,
+                    Authorization: `Bearer ${user?.token}`,
                 },
             }
         )
@@ -63,7 +63,7 @@ export const useAccountRequestQuery = (accountNumber?:   string | null) => {
     const { requestType } = useRequestTypeContext()
     const request = async () => {
         const data = await axiosInstance.get(
-            requestType == "account-update"
+            requestType == "update"
             ? `/api/single-update-request/${accountNumber}?accountNumber=${accountNumber}`
             : `/api/single-upgrade-request/${accountNumber}?accountNumber=${accountNumber}`,
             { 

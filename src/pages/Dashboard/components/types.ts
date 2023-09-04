@@ -21,4 +21,4 @@ export interface SidebarLink {
   text: string;
   isActive: boolean;
  } 
- export type SidebarOption = 'account-update' | 'account-upgrade';
+ export type SidebarOption = 'update' | 'upgrade';

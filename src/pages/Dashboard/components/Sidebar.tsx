@@ -22,7 +22,7 @@ const Sidebar: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log(requestType, "the request typr")
+        
     }, [requestType])
 
     return (
@@ -39,12 +39,12 @@ const Sidebar: React.FC = () => {
                             <button
                             // sm:py-0 sm:px-2 sm:w-full
                                 className={`lg:py-3 lg:px-8 mb-4 w-full sm:py-0 sm:px-2 sm:w-full ${
-                                    requestType === "account-update"
+                                    requestType === "update"
                                         ? "bg-blue-100 rounded-xl text-blue-500 font-bold text-lg"
                                         : "text-white font-bold"
                                 } flex items-center`}
                                 onClick={() =>
-                                    handleOptionClick("account-update")
+                                    handleOptionClick("update")
                                 }
                             >
                                 <AiOutlineUser className="mr-2 font-bold text-2xl text-blue-500 cursor-pointer" />
@@ -54,12 +54,12 @@ const Sidebar: React.FC = () => {
                         <li>
                             <button
                                 className={`py-3 px-8 mb-10  w-full ${
-                                    requestType === "account-upgrade"
+                                    requestType === "upgrade"
                                         ? "bg-blue-100 text-blue-500 font-bold rounded-xl text-lg"
                                         : "text-white font-bold"
                                 } flex  items-start`}
                                 onClick={() =>
-                                    handleOptionClick("account-upgrade")
+                                    handleOptionClick("upgrade")
                                 }
                             >
                                 <AiOutlineArrowUp className=" font-bold text-2xl text-blue-500 cursor-pointer " />

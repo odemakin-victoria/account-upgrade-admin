@@ -15,12 +15,14 @@ export interface AccountRequestResponse {
     accountNumber: string
     RequestType: string
     updateStatus: string
-    bvn: string | null
+    bvn: string 
+    vnin: string 
     personalDetails: personalDetails
     nextOfKin: NextOfKin
     employeeStatus: EmployeeStatus
     contactAddress: contactAddress
-    dateCreated: string
+    citizenship:citizenship
+    createdAt: string
     documents: AccountDocumentResponse[]
 }
 
@@ -31,7 +33,7 @@ export interface Document {
     documentName?: string
     documentType?: string
     documentStatus: string
-    documentComment: string | null
+    documentComment: string 
 }
 
 export interface AccountDocumentUpdate extends Document {
@@ -56,8 +58,8 @@ export interface CustomerDocumentMultiple {
 export interface AccountDocumentResponse extends Document {
     documentId: string
     filePath: string
-    dateCreated: string
-    dateLastModified: string
+    createdAt: string
+    updatedAt: string
 }
 
 /**
@@ -68,12 +70,14 @@ export interface AccountDocumentRequest {
     document: File
     documentName?: string
     documentType?: string
+    documentComment?: string
 }
 
 /**
  * Represents the contact address information.
  */
 export interface contactAddress {
+    contactAddress: any
     country: string
     city: string
     zipCode: string
@@ -83,8 +87,8 @@ export interface contactAddress {
     addressLine2: string
     streetAddress: string
     houseNumber:string
-    dateCreated: Date
-    dateLastModified: Date
+    createdAt: Date
+    updatedAt: Date
 
     requestId: string
     
@@ -108,46 +112,45 @@ export interface personalDetails {
     firstName: string
     lastName: string
     middleName: string
-    DOB: string
-    dateCreated: Date
-    dateLastModified: Date
+    dateOfBirth: string
+    createdAt: Date
+    updatedAt: Date
 }
 /**
  * Represents the next of kin personal information.
  */
 export interface NextOfKin {
     fullName: string
-    RelationshipOfKin: string
-    DobOfKin: string
+    relationship: string
+    dob: string
     phoneNumber: string
-    HouseNumberOfKin: string
-    StateOfKin: string
-    StreetNameOfKin: string
-    LocalGovernmentOfKin: string
-    PostalZipCodeOfKin: string
-    dateCreated: Date
-    dateLastModified: Date
+    houseNo: string
+    state: string
+    streetName: string
+    localGovernment: string
+    postalZipCode: string
+    createdAt: Date
+    updatedAt: Date
 }
 export interface EmployeeStatus {
-    Status: string
-    EmployersName: string
-    NatureOfBusiness: string
-    NumberofYears: string
-    AnnualIncome: string
-    dateCreated?: Date
-    dateLastModified?: Date
+    employmentStatus: string
+    employersName: string
+    natureOfBusiness: string
+    numbersofYears: string
+    annualIncome: string
+    createdAt?: Date
+    updatedAt?: Date
 }
 
-export interface Citizenship {
+export interface citizenship {
     foreignTaxId: string
     countryTaxResidence: string
-    mobileNumber: string
     addressLine1: string
     addressLine2: string
-    country: string
-    dateCreated?: Date
-    dateLastModified?: Date
+    createdAt?: Date
+    updatedAt?: Date
 }
+
 /**
  * Enumerates the types of documents.
  */

@@ -14,16 +14,19 @@ import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useParams } from "react-router-dom"
 import { IUpdateDocument } from "./types"
 import { NotificationManager } from "@/utils/ResponseHandler"
+import { useRequestTypeContext } from "@/utils/request.context"
+
 
 export const useAccountRequestQuery = () => {
     const { user } = useAuthContext()
-
+    const { requestType } = useRequestTypeContext()
     const search = useParams()
     const { accountNo } = useParams()
+   
 
     const request = async () => {
         const data = await axiosInstance.get<AccountRequestResponse>(
-            `/api/account-request/${accountNo}?accountNumber=${accountNo}`,
+            `/api/account-request/${accountNo}?accountNumber=${accountNo}&requestType=${requestType}`,
             {
                 headers: {
                     Authorization: `Bearer ${user?.token}`,
@@ -34,7 +37,7 @@ export const useAccountRequestQuery = () => {
     }
 
     return useQuery<AccountRequestResponse, AxiosError<any>>({
-        queryKey: ["get-account-details", accountNo],
+        queryKey: ["get-account-details", accountNo,requestType],
         queryFn: request,
         onError: (error) => {
             notifications.show({
@@ -133,7 +136,7 @@ export const useDocumentUpdate = () => {
      * @returns A Promise that resolves to the updated account document.
      */
     const request = async (values: CustomerDocumentMultiple) => {
-        console.log(values, "the values for rejection")
+     
 
         const formData = new FormData()
 

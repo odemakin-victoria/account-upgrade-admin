@@ -2,6 +2,7 @@ import { axiosInstance } from "@/config/api"
 import { AxiosError } from "axios"
 import { useMutation } from "react-query"
 import { LoginResponse } from "../types"
+import { notifications } from "@mantine/notifications"
 
 /**
  * Handles network calls to the login endpoint

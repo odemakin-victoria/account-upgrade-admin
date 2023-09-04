@@ -18,15 +18,15 @@ import { reducer } from "./utils"
 import { Loader, Skeleton } from "@mantine/core"
 import ContactDetails from "./components/contact-details"
 import headerOptimusLogo from "@/shared/assets/images/Optimus_Logo.svg"
-
+import { useRequestTypeContext } from "@/utils/request.context"
 
 export default function AccountRequest() {
     const { data, isLoading } = useAccountRequestQuery()
+    const { requestType } = useRequestTypeContext()
     const [comment, setComment] = useState("")
     const [document, setDocument] = useState<string | null>(null)
     const [isImgLoaded, setIsImgLoaded] = useState(false)
-    // const accountNoQuery = useAccountNumberQuery()
-    // console.log("accountnoquery", accountNoQuery)
+    const [isOnViewTriggered, setIsOnViewTriggered] = useState(false)
 
     const { selectDocument, selectedIds, clearSelection } =
         useDocumentSelection()
@@ -38,6 +38,7 @@ export default function AccountRequest() {
             documentStatus: "",
         },
     })
+    console.log(document, "this is the document")
 
     const [modalState, dispatch] = useReducer(reducer, { modalType: null })
     const { mutate, ...update } = useDocumentUpdate()
@@ -56,7 +57,15 @@ export default function AccountRequest() {
             // email: accountNoQuery.data?.data.emailId as string,
         })
     }
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
+    const openModal = () => {
+        setIsModalOpen(true)
+    }
+
+    const closeModal = () => {
+        setIsModalOpen(false)
+    }
     return (
         <div className="px-6 py-10 min-h-screen ">
             <div className="flex items-center gap-6 mb-10">
@@ -66,147 +75,192 @@ export default function AccountRequest() {
                     role="button"
                     aria-label="goto dashboard"
                 />
-                 <img
-                                src={headerOptimusLogo}
-                                alt="optimus_bank_logo"
-                            />
+                <img src={headerOptimusLogo} alt="optimus_bank_logo" />
             </div>
             <div className="lg:grid grid-cols-2 items-center">
-                <main className="p-4 pr-6">
-                    <div className="mb-20">
-                        <h2 className="text-lg mb-8 centered-line">
-                            Personal Details
-                        </h2>
-                        <div className="grid grid-cols-2 gap-6 gap-x-6">
-                            <Skeleton visible={isLoading}>
-                                <DrawerCell
-                                    title="Marital Status"
-                                    content={
-                                        data?.personalDetails?.maritalStatus !== undefined
-                                            ? data?.personalDetails?.maritalStatus
-                                            : '---'
-                                    }
-                                />
-                            </Skeleton>
-                            <Skeleton visible={isLoading}>
-                                <DrawerCell
-                                    title="Mother's Maiden Name"
-                                    content={
-                                        data?.personalDetails?.motherMaidenName !== undefined
-                                            ? data?.personalDetails?.motherMaidenName
-                                            : '---'
-                                    }
-                                 
-                                />
-                            </Skeleton>
-                            <Skeleton visible={isLoading}>
-                                <DrawerCell
-                                    title="Name of Next of Kin"
-                                    content={
-                                        data?.nextOfKin?.fullName !== "undefined"
-                                            ? data?.nextOfKin?.fullName
-                                            : '---'
-                                    }
-                                   
-                                />
-                            </Skeleton>
-                            <Skeleton visible={isLoading}>
-                                <DrawerCell
-                                    title="Phone No. of Next of Kin"
-                                    content={
-                                        !data?.nextOfKin?.phoneNumber || data?.nextOfKin?.phoneNumber == "undefined"
-                                            ? '---'
-                                           : data?.nextOfKin?.phoneNumber
-                                             
-                                    }
-                                />
-                            </Skeleton>
-                            <Skeleton visible={isLoading}>
-                                <DrawerCell title="Upload Photo">
-                                    <img
-                                        src={
-                                            data?.documents?.find(
-                                                (item) =>
-                                                    item.documentType ===
-                                                    "CUSTOMERPHOTO"
-                                            )?.filePath || '---'
-                                        }
-                                        alt="user"
-                                    />
-                                </DrawerCell>
-                            </Skeleton>
-                            <Skeleton visible={isLoading}>
-                                <DrawerCell title="Signature">
-                                    <img
-                                        src={
-                                            data?.documents?.find(
-                                                (item) =>
-                                                    item.documentType ===
-                                                    "SIGNATURE"
-                                            )?.filePath || '---'
-                                        }
-                                        alt="signature file"
-                                    />
-                                </DrawerCell>
-                            </Skeleton>
-                        </div>
-                    </div>
-                    <ContactDetails
-                        isLoading={isLoading}
-                        data={data?.contactAddress}
-                    />
-                    <div className="mb-14 ">
-                        <div className="pr-10 centered-line bg-white mb-8">
-                            <h2 className="text-lg mb-4 ">
-                                Means of Identification
+                {requestType === "update" && (
+                    <main className="p-4 pr-6">
+                        <div className="mb-20">
+                            <h2 className="text-lg mb-8 centered-line">
+                                Personal Details
                             </h2>
+                            <div className="grid grid-cols-2 gap-6 gap-x-6">
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="First Name"
+                                        content={
+                                            data?.personalDetails?.firstName !==
+                                            undefined
+                                                ? data?.personalDetails
+                                                      ?.firstName
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Middle Name"
+                                        content={
+                                            data?.personalDetails
+                                                ?.middleName !== undefined
+                                                ? data?.personalDetails
+                                                      ?.middleName
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Last Name"
+                                        content={
+                                            data?.personalDetails?.lastName !==
+                                            undefined
+                                                ? data?.personalDetails
+                                                      ?.lastName
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Mother's Maiden Name"
+                                        content={
+                                            data?.personalDetails
+                                                ?.motherMaidenName !== undefined
+                                                ? data?.personalDetails
+                                                      ?.motherMaidenName
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Marital Status"
+                                        content={
+                                            data?.personalDetails
+                                                ?.maritalStatus !== undefined
+                                                ? data?.personalDetails
+                                                      ?.maritalStatus
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Date of Birth"
+                                        content={
+                                            data?.personalDetails
+                                                ?.dateOfBirth !== undefined
+                                                ? data?.personalDetails
+                                                      ?.dateOfBirth
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                            </div>
                         </div>
-                        <Skeleton visible={isLoading}>
-                            {selectedIds.length > 0 && (
-                                <div className="flex justify-end gap-6 mb-6">
-                                    <button
-                                        type="button"
-                                        className="p-4 bg-red-500 w-28 text-white rounded-lg "
-                                        onClick={() =>
-                                            dispatch({
-                                                type: "OPEN_MODAL",
-                                                modalType: "REJECT",
-                                            })
-                                        }
-                                    >
-                                        Reject
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="p-4 bg-blue-500 text-white rounded-lg"
-                                        onClick={() =>
-                                            dispatch({
-                                                type: "OPEN_MODAL",
-                                                modalType: "ACCEPT",
-                                            })
-                                        }
-                                    >
-                                        Confirm Documents
-                                    </button>
-                                </div>
-                            )}
+                        <ContactDetails
+                            isLoading={isLoading}
+                            data={data?.contactAddress}
+                        />
+                        <div className="mb-14 ">
+                            <div className="pr-10 centered-line bg-white mb-8">
+                                <h2 className="text-lg mb-4 ">
+                                    Means of Identification
+                                </h2>
+                            </div>
+                            <Skeleton visible={isLoading}>
+                                {selectedIds.length > 0 && (
+                                    <div className="flex justify-end gap-6 mb-6">
+                                        <button
+                                            type="button"
+                                            className="p-4 bg-red-500 w-28 text-white rounded-lg "
+                                            onClick={() =>
+                                                dispatch({
+                                                    type: "OPEN_MODAL",
+                                                    modalType: "REJECT",
+                                                })
+                                            }
+                                        >
+                                            Reject
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="p-4 bg-blue-500 text-white rounded-lg"
+                                            onClick={() =>
+                                                dispatch({
+                                                    type: "OPEN_MODAL",
+                                                    modalType: "ACCEPT",
+                                                })
+                                            }
+                                        >
+                                            Confirm Documents
+                                        </button>
+                                    </div>
+                                )}
+
+                                <table className="w-full bg-gray-50">
+                                    <tbody>
+                                        {data?.documents
+                                            ?.filter(
+                                                (item) =>
+                                                    item.documentType !==
+                                                    "DIASPORA"
+                                            )
+                                            .map((item, index) => (
+                                                <DocumentRow
+                                                    key={index}
+                                                    data={{
+                                                        id: item.documentId as string,
+                                                        documentType:
+                                                            item.documentType as string,
+                                                        documentStatus:
+                                                            item.documentStatus,
+                                                        documentComment:
+                                                            item.documentComment as string,
+                                                        link: item.filePath,
+                                                    }}
+                                                    isChecked={selectedIds.includes(
+                                                        item.documentId
+                                                    )}
+                                                    toggleSelection={
+                                                        selectDocument
+                                                    }
+                                                    onView={(args) =>
+                                                        setDocument(args)
+                                                    }
+                                                />
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </Skeleton>
+                        </div>
+                        <div className="mb-14">
+                            <h2 className="text-lg mb-4">
+                                Diaspora Information
+                            </h2>
 
                             <table className="w-full bg-gray-50">
                                 <tbody>
                                     {data?.documents
                                         ?.filter(
                                             (item) =>
-                                                item.documentType !== "DIASPORA"
+                                                item.documentType === "DIASPORA"
                                         )
                                         .map((item, index) => (
                                             <DocumentRow
                                                 key={index}
                                                 data={{
                                                     id: item.documentId as string,
-                                                    documentType:
-                                                        item.documentType as string,
+                                                    documentType: `${
+                                                        item.documentType
+                                                    }-${index + 1}`,
                                                     documentStatus:
                                                         item.documentStatus,
+                                                    documentComment:
+                                                        item.documentComment as string,
                                                     link: item.filePath,
                                                 }}
                                                 isChecked={selectedIds.includes(
@@ -220,60 +274,532 @@ export default function AccountRequest() {
                                         ))}
                                 </tbody>
                             </table>
-                        </Skeleton>
-                    </div>
-                    <div className="mb-14">
-                        <h2 className="text-lg mb-4">Diaspora Information</h2>
+                        </div>
+                    </main>
+                )}
+                {requestType === "upgrade" && (
+                    <main className="p-4 pr-6">
+                        <div className="mb-20">
+                            <h2 className="text-lg mb-8  centered-line">
+                                Personal Details
+                            </h2>
+                            <div className="grid grid-cols-2 gap-6 gap-x-6">
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Account Number"
+                                        content={
+                                            data?.accountNumber !== undefined
+                                                ? data?.accountNumber
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="BVN"
+                                        content={
+                                            data?.bvn !== undefined
+                                                ? data?.bvn
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Virtual NIN"
+                                        content={
+                                            data?.vnin !== undefined
+                                                ? data?.vnin
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Title"
+                                        content={
+                                            data?.personalDetails?.title !==
+                                            undefined
+                                                ? data?.personalDetails?.title
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Mother's Maiden Name"
+                                        content={
+                                            data?.personalDetails
+                                                ?.motherMaidenName !== undefined
+                                                ? data?.personalDetails
+                                                      ?.motherMaidenName
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Marital Status"
+                                        content={
+                                            data?.personalDetails
+                                                ?.maritalStatus !== undefined
+                                                ? data?.personalDetails
+                                                      ?.maritalStatus
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell />
+                                </Skeleton>
 
-                        <table className="w-full bg-gray-50">
-                            <tbody>
-                                {data?.documents
-                                    ?.filter(
-                                        (item) =>
-                                            item.documentType === "DIASPORA"
-                                    )
-                                    .map((item, index) => (
-                                        <DocumentRow
-                                            key={index}
-                                            data={{
-                                                id: item.documentId as string,
-                                                documentType: `${
-                                                    item.documentType
-                                                }-${index + 1}`,
-                                                documentStatus:
-                                                    item.documentStatus,
-                                                link: item.filePath,
-                                            }}
-                                            isChecked={selectedIds.includes(
-                                                item.documentId
-                                            )}
-                                            toggleSelection={selectDocument}
-                                            onView={(args) => setDocument(args)}
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell title="Upload Photo">
+                                        <img
+                                            src={
+                                                data?.documents?.find(
+                                                    (item) =>
+                                                        item.documentType ===
+                                                        "CUSTOMERPHOTO"
+                                                )?.filePath || "---"
+                                            }
+                                            alt="user"
                                         />
-                                    ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </main>
+                                    </DrawerCell>
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell title="Signature">
+                                        <img
+                                            src={
+                                                data?.documents?.find(
+                                                    (item) =>
+                                                        item.documentType ===
+                                                        "SIGNATURE"
+                                                )?.filePath || "---"
+                                            }
+                                            alt="signature file"
+                                        />
+                                    </DrawerCell>
+                                </Skeleton>
+                            </div>
+                        </div>
 
-                <div className=" fixed lg:w-2/4 right-0 bg-gray-200 h-screen top-0 flex items-center justify-center w-full border border-gray-100 ">
+                        <h2 className="text-lg mb-8  centered-line">
+                            Next of Kin Details
+                        </h2>
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Name of Next of Kin"
+                                    content={
+                                        data?.nextOfKin?.fullName !==
+                                        "undefined"
+                                            ? data?.nextOfKin?.fullName
+                                            : "---"
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Relationship with Next of Kin"
+                                    content={
+                                        data?.nextOfKin?.relationship !==
+                                        "undefined"
+                                            ? data?.nextOfKin?.relationship
+                                            : "---"
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Next of Kin Phone Number"
+                                    content={
+                                        data?.nextOfKin?.phoneNumber !==
+                                        "undefined"
+                                            ? data?.nextOfKin?.phoneNumber
+                                            : "---"
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Next of Kin Date of Birth"
+                                    content={
+                                        data?.nextOfKin?.dob !== "undefined"
+                                            ? data?.nextOfKin?.dob
+                                            : "---"
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Next of Kin House No"
+                                    content={
+                                        !data?.nextOfKin?.houseNo ||
+                                        data?.nextOfKin?.houseNo == "undefined"
+                                            ? data?.contactAddress?.houseNumber
+                                            : data?.nextOfKin?.houseNo
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Next of Kin Street Name"
+                                    content={
+                                        !data?.nextOfKin?.streetName ||
+                                        data?.nextOfKin?.streetName ==
+                                            "undefined"
+                                            ? data?.contactAddress
+                                                  ?.streetAddress
+                                            : data?.nextOfKin?.streetName
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="State of Next of Kin"
+                                    content={
+                                        !data?.nextOfKin?.state ||
+                                        data?.nextOfKin?.state == "undefined"
+                                            ? data?.contactAddress?.state
+                                            : data?.nextOfKin?.state
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Local Government of Next of Kin"
+                                    content={
+                                        !data?.nextOfKin?.localGovernment ||
+                                        data?.nextOfKin?.localGovernment ==
+                                            "undefined"
+                                            ? data?.contactAddress
+                                                  ?.localGovernment
+                                            : data?.nextOfKin?.localGovernment
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Next of Kin Postal Code"
+                                    content={
+                                        !data?.nextOfKin?.postalZipCode ||
+                                        data?.nextOfKin?.postalZipCode ==
+                                            "undefined"
+                                            ? data?.contactAddress?.zipCode
+                                            : data?.nextOfKin?.postalZipCode
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+
+                        <ContactDetails
+                            isLoading={isLoading}
+                            data={data?.contactAddress}
+                        />
+
+                        <h2 className="text-lg mb-8 centered-line">
+                            Employment Status
+                        </h2>
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employment Status"
+                                    content={
+                                        !data?.employeeStatus
+                                            ?.employmentStatus ||
+                                        data?.employeeStatus
+                                            ?.employmentStatus == "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employmentStatus
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employmer's Name"
+                                    content={
+                                        !data?.employeeStatus?.employersName ||
+                                        data?.employeeStatus?.employersName ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employersName
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Numbers of Years in Employment"
+                                    content={
+                                        !data?.employeeStatus?.numbersofYears ||
+                                        data?.employeeStatus?.numbersofYears ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.numbersofYears
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Annual Income"
+                                    content={
+                                        !data?.employeeStatus?.annualIncome ||
+                                        data?.employeeStatus?.annualIncome ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus?.annualIncome
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Nature Of Business"
+                                    content={
+                                        !data?.employeeStatus
+                                            ?.natureOfBusiness ||
+                                        data?.employeeStatus
+                                            ?.natureOfBusiness == "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.natureOfBusiness
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+
+                        <h2 className="text-lg mb-8 centered-line">
+                            Other Citizenship
+                        </h2>
+
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Foreign Tax Id"
+                                    content={
+                                        !data?.citizenship?.foreignTaxId ||
+                                        data?.citizenship?.foreignTaxId ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.citizenship?.foreignTaxId
+                                    }
+                                />
+                            </Skeleton>
+
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Country Tax Residence"
+                                    content={
+                                        !data?.citizenship
+                                            ?.countryTaxResidence ||
+                                        data?.citizenship
+                                            ?.countryTaxResidence == "undefined"
+                                            ? "---"
+                                            : data?.citizenship
+                                                  ?.countryTaxResidence
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Address Line 1"
+                                    content={
+                                        !data?.citizenship?.addressLine1 ||
+                                        data?.citizenship?.addressLine1 ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.citizenship?.addressLine1
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Address Line 2"
+                                    content={
+                                        !data?.citizenship?.addressLine2 ||
+                                        data?.citizenship?.addressLine2 ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.citizenship?.addressLine2
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+                        <div className="mb-14 ">
+                            <div className="pr-10 centered-line bg-white mb-8">
+                                <h2 className="text-lg mb-4 ">
+                                    Means of Identification
+                                </h2>
+                            </div>
+                            <Skeleton visible={isLoading}>
+                                {selectedIds.length > 0 && (
+                                    <div className="flex justify-end gap-6 mb-6">
+                                        <button
+                                            type="button"
+                                            className="p-4 bg-red-500 w-28 text-white rounded-lg "
+                                            onClick={() =>
+                                                dispatch({
+                                                    type: "OPEN_MODAL",
+                                                    modalType: "REJECT",
+                                                })
+                                            }
+                                        >
+                                            Reject
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="p-4 bg-blue-500 text-white rounded-lg"
+                                            onClick={() =>
+                                                dispatch({
+                                                    type: "OPEN_MODAL",
+                                                    modalType: "ACCEPT",
+                                                })
+                                            }
+                                        >
+                                            Confirm Documents
+                                        </button>
+                                    </div>
+                                )}
+
+                                <table className="w-full bg-gray-50">
+                                    <tbody>
+                                        {data?.documents
+                                            ?.filter(
+                                                (item) =>
+                                                    item.documentType !==
+                                                    "DIASPORA"
+                                            )
+                                            .map((item, index) => (
+                                                <DocumentRow
+                                                    key={index}
+                                                    data={{
+                                                        id: item.documentId as string,
+                                                        documentType:
+                                                            item.documentType as string,
+                                                        documentStatus:
+                                                            item.documentStatus,
+                                                        documentComment:
+                                                            item.documentComment as string,
+                                                        link: item.filePath,
+                                                    }}
+                                                    isChecked={selectedIds.includes(
+                                                        item.documentId
+                                                    )}
+                                                    toggleSelection={
+                                                        selectDocument
+                                                    }
+                                                    onView={(args) =>
+                                                        setDocument(args)
+                                                    }
+                                                />
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </Skeleton>
+                        </div>
+                        <div className="mb-14">
+                            <h2 className="text-lg mb-4">
+                                Diaspora Information
+                            </h2>
+
+                            <table className="w-full bg-gray-50">
+                                <tbody>
+                                    {data?.documents
+                                        ?.filter(
+                                            (item) =>
+                                                item.documentType === "DIASPORA"
+                                        )
+                                        .map((item, index) => (
+                                            <DocumentRow
+                                                key={index}
+                                                data={{
+                                                    id: item.documentId as string,
+                                                    documentType: `${
+                                                        item.documentType
+                                                    }-${index + 1}`,
+                                                    documentStatus:
+                                                        item.documentStatus,
+                                                    documentComment:
+                                                        item.documentComment as string,
+                                                    link: item.filePath,
+                                                }}
+                                                isChecked={selectedIds.includes(
+                                                    item.documentId
+                                                )}
+                                                toggleSelection={selectDocument}
+                                                onView={(args) =>
+                                                    setDocument(args)
+                                                }
+                                            />
+                                        ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </main>
+                )}
+                {/* onClick={() => props.onView(data.link)} */}
+
+                {/* <div className=" fixed inset-0 flex items-center justify-center z-50 bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+        {document ? (
+          <>
+            {!isImgLoaded && <Loader size={24} />}
+            <object
+              type="application/pdf"
+              data={document}
+              width="250"
+              height="200"
+              onLoad={() => setIsImgLoaded(true)}
+              className="bg-gray-50 h-full w-full object-contain"
+            ></object>
+          </>
+        ) : (
+          <p>Click on a document to display</p>
+        )}
+      </div>   */}
+      
+                <Modal
+                    opened={!!document}
+                    onClose={() => setDocument(null)}
+                    className="w-full"
+                    size="lg"
+                >
                     {document ? (
                         <>
                             {!isImgLoaded && <Loader size={24} />}
-
-                            <object
+                            <img src={document} alt="" />
+                            {/* <object
                                 type="application/pdf"
                                 data={document}
                                 width="250"
-                                height="200"
+                                height="100vh"
                                 onLoad={() => setIsImgLoaded(true)}
-                                className="bg-gray-50 h-full w-full object-contain"
-                            ></object>
+                                className="bg-gray-50 h-full w-full"
+                            ></object> */}
                         </>
                     ) : (
                         <p>Click on a document to display</p>
                     )}
-                </div>
+                </Modal>
+                {/* <div className=" fixed lg:w-2/4 right-0 bg-gray-200 h-screen top-0 flex items-center justify-center w-full border border-gray-100 ">
+        {document ? (
+          <>
+            {!isImgLoaded && <Loader size={24} />}
+            <object
+              type="application/pdf"
+              data={document}
+              width="250"
+              height="200"
+              onLoad={() => setIsImgLoaded(true)}
+              className="bg-gray-50 h-full w-full object-contain"
+            ></object>
+          </>
+        ) : (
+          <p>Click on a document to display</p>
+        )}
+      </div>  
+     */}
             </div>
 
             <Modal

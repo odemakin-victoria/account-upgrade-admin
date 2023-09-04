@@ -12,6 +12,7 @@ import { motion } from "framer-motion"
 import BG from "./assets/images/login_bg.jpg"
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import react-icons
 import headerOptimusLogo from "@/shared/assets/images/Optimus_Logo.svg"
+import { notifications } from "@mantine/notifications"
 
 
 
@@ -26,6 +27,8 @@ export default function Login() {
     })
 
     const [isLoading, setIsLoading] = useState(false)
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     let location = useLocation()
     let navigate = useNavigate()
     let from = location.state?.from?.pathname || DASHBOARD_ROUTE
@@ -56,10 +59,31 @@ export default function Login() {
                     },
                 })
             } else {
-                // Handle login failure
+                setIsLoading(false);
+                
             }
         } catch (error) {
-            setIsLoading(false)
+            setIsLoading(false);
+            notifications.show({
+                message: "Wrong password or Username. Please try again!",
+                title: "An Error Occurred",
+                styles: (theme) => ({
+                    root: {
+                        backgroundColor: theme.colors.red[8],
+                        border: "transparent",
+                        "&::before": { backgroundColor: theme.white },
+                    },
+                    description: {
+                        color: "white",
+                    },
+                    title: {
+                        color: "white",
+                        fontWeight: "bold",
+                    },
+                }),
+                color: "white",
+                autoClose: 5000,
+            });
         }
     }
     // const handleSubmit = async (data: { username: string; password: string }) => {
@@ -106,7 +130,9 @@ export default function Login() {
                     <h1 className="text-2xl font-medium mb-10 text-text-gray">
                         Customer Update Portal
                     </h1>
-
+                    {errorMessage && (
+                        <p className="text-red-500 mb-4">{errorMessage}</p>
+                    )}
                     <FormProvider {...methods}>
                         <div className="mb-6 ">
                             <Label labelName="login">Username</Label>

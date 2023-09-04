@@ -3,19 +3,22 @@ import { contactAddress } from "@/shared/types"
 import { Skeleton } from "@mantine/core"
 
 export default function ContactDetails({
+    
     isLoading,
     data,
 }: {
     isLoading: boolean
     data?: contactAddress
 }) {
+    
     if (!data) {
         return null
     }
-    const country = data.country ? data.country.toLowerCase() : '';
+    // const county = data.country ? data.country.toLowerCase() : '';
+    const country = data.country ? data.country.toLowerCase() :
     
-
-    if (country !== "nigeria") {
+console.log( " address")
+    if (country === "undefined" || "Nigeria") {
         return <Local isLoading={isLoading} data={data} />;
     }
 else{
@@ -23,6 +26,7 @@ else{
 }
   
 }
+
 const International = ({
     isLoading,
     data,
@@ -37,7 +41,7 @@ const International = ({
                 <Skeleton visible={isLoading}>
                     <DrawerCell
                         title="Country"
-                        content={`${data?.country ?? "---"}`}
+                        content={ data.country ?? "---"}
                     />
                 </Skeleton>
                 <Skeleton visible={isLoading}>
@@ -105,6 +109,7 @@ const Local = ({
                         content={data?.zipCode || "---"}
                     />
                 </Skeleton>
+                
                 <Skeleton visible={isLoading}>
                     <DrawerCell title="State" content={data?.state || "---"} />
                 </Skeleton>
