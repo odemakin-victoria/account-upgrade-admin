@@ -286,13 +286,7 @@ export default function Dashboard() {
                             <tbody>
                                 {filteredData.length > 0 ? (
                                     filteredData
-                                        .sort((a: any, b: any) => {
-                                            console.log(
-                                                a.createdAt,
-                                                "a created at"
-                                            )
-                                            return b.createdAt - a.createdAt
-                                        })
+                                      
                                         .map((item, index) => (
                                             <Table.TableRow
                                                 key={index}

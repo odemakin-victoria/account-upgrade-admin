@@ -143,9 +143,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return response
         },
         (error) => {
-            console.log("called", error)
+            // console.log("called", error)
 
-            console.log("error -- adminInstance", error.response.status)
+            // console.log("error -- adminInstance", error.response.status)
             // Check if the error response indicates that the user should be logged out
             if (error.response?.status === 401) {
                 // Perform the logout action here

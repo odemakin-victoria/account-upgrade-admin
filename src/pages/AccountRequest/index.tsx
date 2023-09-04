@@ -38,7 +38,6 @@ export default function AccountRequest() {
             documentStatus: "",
         },
     })
-    console.log(document, "this is the document")
 
     const [modalState, dispatch] = useReducer(reducer, { modalType: null })
     const { mutate, ...update } = useDocumentUpdate()
@@ -67,7 +66,7 @@ export default function AccountRequest() {
         setIsModalOpen(false)
     }
     return (
-        <div className="px-6 py-10 min-h-screen ">
+        <div className="px-14 py-10 min-h-screen mx-auto ">
             <div className="flex items-center gap-6 mb-10">
                 <BiArrowBack
                     className="text-3xl"
@@ -77,7 +76,7 @@ export default function AccountRequest() {
                 />
                 <img src={headerOptimusLogo} alt="optimus_bank_logo" />
             </div>
-            <div className="lg:grid grid-cols-2 items-center">
+            <div className="px-">
                 {requestType === "update" && (
                     <main className="p-4 pr-6">
                         <div className="mb-20">
@@ -278,7 +277,7 @@ export default function AccountRequest() {
                     </main>
                 )}
                 {requestType === "upgrade" && (
-                    <main className="p-4 pr-6">
+                    <main className="p-4 pr-6 mx-auto">
                         <div className="mb-20">
                             <h2 className="text-lg mb-8  centered-line">
                                 Personal Details
@@ -349,9 +348,7 @@ export default function AccountRequest() {
                                         }
                                     />
                                 </Skeleton>
-                                <Skeleton visible={isLoading}>
-                                    <DrawerCell />
-                                </Skeleton>
+                              
 
                                 <Skeleton visible={isLoading}>
                                     <DrawerCell title="Upload Photo">
@@ -364,6 +361,8 @@ export default function AccountRequest() {
                                                 )?.filePath || "---"
                                             }
                                             alt="user"
+                                            className="w-48 h-48" // Set the image size to 100px by adding these classes
+
                                         />
                                     </DrawerCell>
                                 </Skeleton>
@@ -378,6 +377,8 @@ export default function AccountRequest() {
                                                 )?.filePath || "---"
                                             }
                                             alt="signature file"
+                                            className="w-48 h-48" // Set the image size to 100px by adding these classes
+
                                         />
                                     </DrawerCell>
                                 </Skeleton>
@@ -739,67 +740,36 @@ export default function AccountRequest() {
                         </div>
                     </main>
                 )}
-                {/* onClick={() => props.onView(data.link)} */}
-
-                {/* <div className=" fixed inset-0 flex items-center justify-center z-50 bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
-        {document ? (
-          <>
-            {!isImgLoaded && <Loader size={24} />}
-            <object
-              type="application/pdf"
-              data={document}
-              width="250"
-              height="200"
-              onLoad={() => setIsImgLoaded(true)}
-              className="bg-gray-50 h-full w-full object-contain"
-            ></object>
-          </>
-        ) : (
-          <p>Click on a document to display</p>
-        )}
-      </div>   */}
+          
       
-                <Modal
-                    opened={!!document}
-                    onClose={() => setDocument(null)}
-                    className="w-full"
-                    size="lg"
-                >
-                    {document ? (
-                        <>
-                            {!isImgLoaded && <Loader size={24} />}
-                            <img src={document} alt="" />
-                            {/* <object
-                                type="application/pdf"
-                                data={document}
-                                width="250"
-                                height="100vh"
-                                onLoad={() => setIsImgLoaded(true)}
-                                className="bg-gray-50 h-full w-full"
-                            ></object> */}
-                        </>
-                    ) : (
-                        <p>Click on a document to display</p>
-                    )}
-                </Modal>
-                {/* <div className=" fixed lg:w-2/4 right-0 bg-gray-200 h-screen top-0 flex items-center justify-center w-full border border-gray-100 ">
-        {document ? (
-          <>
-            {!isImgLoaded && <Loader size={24} />}
-            <object
-              type="application/pdf"
-              data={document}
-              width="250"
-              height="200"
-              onLoad={() => setIsImgLoaded(true)}
-              className="bg-gray-50 h-full w-full object-contain"
-            ></object>
-          </>
-        ) : (
-          <p>Click on a document to display</p>
-        )}
-      </div>  
-     */}
+          <Modal
+  opened={!!document}
+  onClose={() => setDocument(null)}
+  className="w-full"
+  size="lg"
+>
+  {document && (
+    <>
+      {!isImgLoaded && <Loader size={24} />}
+      {document.toLowerCase().endsWith(".pdf") ? (
+        <div>
+          <iframe src={document} title="PDF Document" width="100%" height="500" />
+          <a
+            href={document}
+            download="document.pdf"
+            className="bg-blue-500 py-3 px-2 rounded-md text-white block text-center text-lg font-semibold hover:bg-blue-600 transition-colors duration-300 mx-40 my-5"
+
+          >
+            Download PDF
+          </a>
+        </div>
+      ) : (
+        <img src={document} alt="" />
+      )}
+    </>
+  )}
+</Modal>
+              
             </div>
 
             <Modal

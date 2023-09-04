@@ -26,12 +26,12 @@ const Sidebar: React.FC = () => {
     }, [requestType])
 
     return (
-        <div className="h-full flex flex-col justify-between items-center min-h-screen sm:bg-transparent sm:shadow-none md:bg-transparent md:shadow-none lg:bg-blue-500 rounded-xl shadow-lg mt-24 ml-2">
-            <div className="flex flex-col lg:pt-24  sm:mt-[-10px] sm:mx-auto md:ml-[9.5em] lg:ml-3 sm:z-50  lg:bg-transparent lg:px-0">
+        <div className="h-full flex flex-col justify-between items-center min-h-screen bg-blue-500 rounded-xl shadow-lg mt-24 ml-2">
+            <div className="flex flex-col pt-24 ml-3 z-50  lg:bg-transparent px-0">
                 <nav
                     className={`w-full ${
                         isMenuOpen ? "block" : " lg:block"
-                    }  sm:bg-blue-500  sm:pt-10 sm:px-28 md:pt-10 md:px-60  lg:bg-transparent lg:px-0`}
+                    }   `}
                 >
                     <ul>
                         {/* sm:w-full */}
@@ -69,8 +69,8 @@ const Sidebar: React.FC = () => {
                     </ul>
                 </nav>
             </div>
-            <div className=" lg:hidden absolute top-0 left-0 sm:flex sm:justify-between md:flex shadow-lg w-full  px-1">
-                {/* <button
+            {/* <div className=" lg:hidden absolute top-0 left-0 sm:flex sm:justify-between md:flex shadow-lg w-full  px-1">
+                 <button
                     className=" text-blue-500 p-2 rounded-lg "
                     onClick={handleMenuToggle}
                 >
@@ -80,22 +80,22 @@ const Sidebar: React.FC = () => {
                     ) : (
                         <AiOutlineMenu className="text-2xl" />
                     )}
-                </button> */}
-                {/* <div className="sm:ml-[120px] md:ml-0">
+                </button> 
+                <div className="sm:ml-[120px] md:ml-0">
                     <img
                         src="https://optimusbank.com/assets/images/header/Optimus_Logo.svg"
                         alt="logo"
                         className=" my-2 w-32 p-2"
                     />
-                </div> */}
-                {/* <div className="">
+                </div> 
+                <div className="">
                     <img
                         src="https://optimusbank.com/assets/images/header/Optimus_Logo.svg"
                         alt="logo"
                         className=" my-2 w-32 p-2"
                     />
-                </div> */}
-            </div>
+                </div> 
+            </div> */}
         </div>
     )
 }

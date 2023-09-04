@@ -49,7 +49,7 @@ export default function Login() {
             })
 
             if (response.responseCode == "00") {
-                console.log("res", response)
+                
                 auth.login({
                     username: data.username,
                     password: data.password,

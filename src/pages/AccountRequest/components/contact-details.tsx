@@ -84,7 +84,7 @@ const Local = ({
     isLoading: boolean
     data: contactAddress
 }) => {
-    console.log(data)
+    // console.log(data)
     return (
         <div className="mb-14">
             <h2 className="text-lg mb-4 centered-line">Contact Details</h2>
