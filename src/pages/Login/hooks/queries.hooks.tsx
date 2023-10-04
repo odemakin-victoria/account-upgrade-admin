@@ -3,12 +3,15 @@ import { AxiosError } from "axios"
 import { useMutation } from "react-query"
 import { LoginResponse } from "../types"
 import { notifications } from "@mantine/notifications"
+import { useAuthContext } from "@/utils/auth.context"
 
 /**
  * Handles network calls to the login endpoint
  * @returns useMutationFn
  */
 export const useLoginRequest = () => {
+  
+
     const request = async ({
         username,
         password,
@@ -18,7 +21,8 @@ export const useLoginRequest = () => {
     }) => {
         const { data } = await axiosInstance.post(`/api/Admin/Login`, {
             username,
-            password,
+            password
+           
         })
         return data
     }

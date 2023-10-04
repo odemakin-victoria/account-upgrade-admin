@@ -343,7 +343,7 @@ export default function Dashboard() {
                                                 <Table.TableBodyCell>
                                                     {dayjs(
                                                         item.createdAt
-                                                    ).format("LL")}{" "}
+                                                    ).format("LLL")}{" "}
                                                 </Table.TableBodyCell>
                                             </Table.TableRow>
                                         ))
@@ -407,7 +407,7 @@ export default function Dashboard() {
                                                 <Table.TableBodyCell>
                                                     {dayjs(
                                                         item.createdAt
-                                                    ).format("LL")}{" "}
+                                                    ).format("LLL")}{" "}
                                                 </Table.TableBodyCell>
                                             </Table.TableRow>
                                         )

@@ -18,8 +18,9 @@ export default function ContactDetails({
     const country = data.country ? data.country.toLowerCase() :
     
 console.log( " address")
-    if (country === "undefined" || "Nigeria") {
+    if (country === "nigeria") {
         return <Local isLoading={isLoading} data={data} />;
+        
     }
 else{
     return <International isLoading={isLoading} data={data} />;
@@ -105,7 +106,7 @@ const Local = ({
                 </Skeleton>
                 <Skeleton visible={isLoading}>
                     <DrawerCell
-                        title="Post Code"
+                        title="Area"
                         content={data?.zipCode || "---"}
                     />
                 </Skeleton>

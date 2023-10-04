@@ -11,7 +11,9 @@ export const RequestTypeContext = createContext<RequestContextData>({
 })
 
 export const RequestTypeProvider = ({ children }: { children: ReactNode }) => {
-    const [requestType, setRequestType] = useState("update")
+    const [requestType, setRequestType] = useState("upgrade")
+    // const [requestType, setRequestType] = useState("update")
+
 
     const value = {
         requestType,

@@ -5,6 +5,7 @@ import {
     // useAccountNumberQuery,
     useAccountRequestQuery,
     useDocumentUpdate,
+    useAccountStatusUpdate,
 } from "./hooks/queries.hooks"
 import { useNavigate, useParams } from "react-router-dom"
 import { DASHBOARD_ROUTE } from "../routes-config"
@@ -19,14 +20,15 @@ import { Loader, Skeleton } from "@mantine/core"
 import ContactDetails from "./components/contact-details"
 import headerOptimusLogo from "@/shared/assets/images/Optimus_Logo.svg"
 import { useRequestTypeContext } from "@/utils/request.context"
+import { CustomerDocumentMultiple } from "@/shared/types"
 
 export default function AccountRequest() {
     const { data, isLoading } = useAccountRequestQuery()
     const { requestType } = useRequestTypeContext()
     const [comment, setComment] = useState("")
+
     const [document, setDocument] = useState<string | null>(null)
     const [isImgLoaded, setIsImgLoaded] = useState(false)
-    const [isOnViewTriggered, setIsOnViewTriggered] = useState(false)
 
     const { selectDocument, selectedIds, clearSelection } =
         useDocumentSelection()
@@ -44,6 +46,7 @@ export default function AccountRequest() {
 
     const handleSubmit = (
         value: IUpdateDocument,
+
         status: "Accepted" | "Rejected"
     ) => {
         dispatch({ type: "CLOSE_MODAL" })
@@ -51,11 +54,23 @@ export default function AccountRequest() {
 
         mutate({
             status,
-            comment: comment,
-
-            // email: accountNoQuery.data?.data.emailId as string,
+            comment,
+            documentId: selectedIds, // Pass the array of selected document IDs
         })
     }
+
+    const { mutate: mutateHandler } = useAccountStatusUpdate()
+
+    const handleRejectClick = (status: "Accepted" | "Rejected") => {
+        // Assuming mutateHandler returns void
+        mutateHandler(status)
+    }
+
+    const handleAcceptClick = (status: "Accepted" | "Rejected") => {
+        // Assuming mutateHandler returns void
+        mutateHandler(status)
+    }
+
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const openModal = () => {
@@ -79,6 +94,51 @@ export default function AccountRequest() {
             <div className="px-">
                 {requestType === "update" && (
                     <main className="p-4 pr-6">
+                        <div>
+                            {data?.toScreen === "B" ? (
+                                <div
+                                    style={{
+                                        backgroundColor: "yellow",
+                                        color: "black",
+                                        padding: "30px",
+                                        marginBottom: 20,
+                                    }}
+                                >
+                                    This Customer's country{" "}
+                                    {data?.contactAddress?.country} falls under
+                                    the Category B classification , kindly
+                                    contact Compliance to review .
+                                </div>
+                            ) : data?.toScreen === "C" ? (
+                                <div
+                                    style={{
+                                        backgroundColor: "red",
+                                        color: "white",
+                                        padding: "30px",
+                                        marginBottom: 20,
+                                    }}
+                                >
+                                    This Customer's country{" "}
+                                    {data?.contactAddress.country}{" "}
+                                    classification falls under the Category C ,
+                                    kindly restriced account and contact
+                                    Compliance to take appropriate step.
+                                </div>
+                            ) : (
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="toScreen"
+                                        content={
+                                            data?.toScreen
+                                                ? String(
+                                                      data.toScreen
+                                                  ).toString()
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                            )}
+                        </div>
                         <div className="mb-20">
                             <h2 className="text-lg mb-8 centered-line">
                                 Personal Details
@@ -108,6 +168,7 @@ export default function AccountRequest() {
                                         }
                                     />
                                 </Skeleton>
+
                                 <Skeleton visible={isLoading}>
                                     <DrawerCell
                                         title="Last Name"
@@ -164,6 +225,52 @@ export default function AccountRequest() {
                             isLoading={isLoading}
                             data={data?.contactAddress}
                         />
+                        <h2 className="text-lg mb-8 centered-line">
+                            Employment Details{" "}
+                        </h2>
+                        <div className="grid grid-cols-2 gap-6 gap-x-6">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employmer's Name"
+                                    content={
+                                        !data?.employeeStatus?.employersName ||
+                                        data?.employeeStatus?.employersName ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employersName
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employmer's Name"
+                                    content={
+                                        !data?.employeeStatus
+                                            ?.employersAddress ||
+                                        data?.employeeStatus
+                                            ?.employersAddress == "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employersAddress
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+                        <h2 className="text-lg mb-8 centered-line mt-10">
+                            Notification Detaiils{" "}
+                        </h2>
+
+                        <Skeleton visible={isLoading}>
+                            <DrawerCell
+                                title="Notification Preference"
+                                content={
+                                    data?.notificationPreference !== undefined
+                                        ? data?.notificationPreference
+                                        : "---"
+                                }
+                            />
+                        </Skeleton>
                         <div className="mb-14 ">
                             <div className="pr-10 centered-line bg-white mb-8">
                                 <h2 className="text-lg mb-4 ">
@@ -206,7 +313,11 @@ export default function AccountRequest() {
                                             ?.filter(
                                                 (item) =>
                                                     item.documentType !==
-                                                    "DIASPORA"
+                                                        "DIASPORA" &&
+                                                    (item.documentStatus ===
+                                                        "PENDING" ||
+                                                        item.documentStatus ===
+                                                            "Accepted")
                                             )
                                             .map((item, index) => (
                                                 <DocumentRow
@@ -274,10 +385,144 @@ export default function AccountRequest() {
                                 </tbody>
                             </table>
                         </div>
+                        <div>
+                            <h2 className="text-lg mb-8 centered-line">
+                                Rejected Documents
+                            </h2>
+                            <table className="w-full bg-gray-50">
+                                <tbody>
+                                    {data?.documents
+                                        ?.filter(
+                                            (item) =>
+                                                item.documentType !==
+                                                    "DIASPORA" &&
+                                                item.documentStatus ===
+                                                    "Rejected"
+                                        )
+                                        .map((item, index) => (
+                                            <DocumentRow
+                                                key={index}
+                                                data={{
+                                                    id: item.documentId as string,
+                                                    documentType:
+                                                        item.documentType as string,
+                                                    documentStatus:
+                                                        item.documentStatus,
+                                                    documentComment:
+                                                        item.documentComment as string,
+                                                    link: item.filePath,
+                                                }}
+                                                isChecked={selectedIds.includes(
+                                                    item.documentId
+                                                )}
+                                                toggleSelection={selectDocument}
+                                                onView={(args) =>
+                                                    setDocument(args)
+                                                }
+                                            />
+                                        ))}
+                                </tbody>
+                            </table>
+                            <div className="mt-10">
+                                <h2 className="text-lg mb-8 centered-line">
+                                    Final Status
+                                </h2>
+                                <div className="flex mx-auto">
+                                    <button
+                                        className="p-4 bg-red-500 w-28 text-white rounded-lg mr-10 "
+                                        onClick={() =>
+                                            handleRejectClick("Rejected")
+                                        }
+                                    >
+                                        Reject
+                                    </button>
+
+                                    <button
+                                        className="p-4 bg-blue-500 w-28 text-white rounded-lg "
+                                        onClick={() =>
+                                            handleAcceptClick("Accepted")
+                                        }
+                                    >
+                                        Accept
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </main>
                 )}
                 {requestType === "upgrade" && (
                     <main className="p-4 pr-6 mx-auto">
+                        <div>
+                            {data?.toScreen === "B" ? (
+                                <div
+                                    style={{
+                                        backgroundColor: "yellow",
+                                        color: "black",
+                                        padding: "30px",
+                                        marginBottom: 20,
+                                    }}
+                                >
+                                    This Customer's country{" "}
+                                    {data?.contactAddress.country} falls under
+                                    the Category B classification , kindly
+                                    contact Compliance to review .
+                                </div>
+                            ) : data?.toScreen === "C" ? (
+                                <div
+                                    style={{
+                                        backgroundColor: "red",
+                                        color: "white",
+                                        padding: "30px",
+                                        marginBottom: 20,
+                                    }}
+                                >
+                                    This Customer's country{" "}
+                                    {data?.contactAddress.country}{" "}
+                                    classification falls under the Category C ,
+                                    kindly restricted  account and contact
+                                    Compliance to take appropriate step.
+                                </div>
+                            ) : (
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="toScreen"
+                                        content={
+                                            data?.toScreen
+                                                ? String(
+                                                      data.toScreen
+                                                  ).toString()
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                            )}
+                        </div>
+
+                        {/* <div>
+                            {data?.toScreen === true ? (
+                                <div
+                                    style={{
+                                        backgroundColor: "red",
+                                        color: "white",
+                                        padding: "30px",
+                                        marginBottom: 20,
+                                    }}
+                                >
+                                   This account has been restricted due to the customer's classification as category B, and Compliance should be contacted to review the next steps.
+                                </div>
+                            ) : (
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="toScreen"
+                                        content={
+                                            data?.toScreen
+                                                ? String(data.toScreen).toString()
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                            )}
+                        </div> */}
                         <div className="mb-20">
                             <h2 className="text-lg mb-8  centered-line">
                                 Personal Details
@@ -303,16 +548,7 @@ export default function AccountRequest() {
                                         }
                                     />
                                 </Skeleton>
-                                <Skeleton visible={isLoading}>
-                                    <DrawerCell
-                                        title="Virtual NIN"
-                                        content={
-                                            data?.vnin !== undefined
-                                                ? data?.vnin
-                                                : "---"
-                                        }
-                                    />
-                                </Skeleton>
+
                                 <Skeleton visible={isLoading}>
                                     <DrawerCell
                                         title="Title"
@@ -324,6 +560,7 @@ export default function AccountRequest() {
                                         }
                                     />
                                 </Skeleton>
+                              
                                 <Skeleton visible={isLoading}>
                                     <DrawerCell
                                         title="Mother's Maiden Name"
@@ -348,8 +585,29 @@ export default function AccountRequest() {
                                         }
                                     />
                                 </Skeleton>
-                              
-
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Purpose of Account "
+                                        content={
+                                            data?.personalDetails
+                                                ?.purposeOfAccount !== undefined
+                                                ? data?.personalDetails
+                                                      ?.purposeOfAccount
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
+                                <Skeleton visible={isLoading}>
+                                    <DrawerCell
+                                        title="Other Reason"
+                                        content={
+                                            data?.personalDetails?.otherReasons !==
+                                            undefined
+                                                ? data?.personalDetails?.otherReasons
+                                                : "---"
+                                        }
+                                    />
+                                </Skeleton>
                                 <Skeleton visible={isLoading}>
                                     <DrawerCell title="Upload Photo">
                                         <img
@@ -362,7 +620,6 @@ export default function AccountRequest() {
                                             }
                                             alt="user"
                                             className="w-48 h-48" // Set the image size to 100px by adding these classes
-
                                         />
                                     </DrawerCell>
                                 </Skeleton>
@@ -378,7 +635,6 @@ export default function AccountRequest() {
                                             }
                                             alt="signature file"
                                             className="w-48 h-48" // Set the image size to 100px by adding these classes
-
                                         />
                                     </DrawerCell>
                                 </Skeleton>
@@ -545,6 +801,19 @@ export default function AccountRequest() {
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
+                                    title=" Source of Wealth"
+                                    content={
+                                        !data?.employeeStatus?.sourceOfWealth ||
+                                        data?.employeeStatus?.sourceOfWealth ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.sourceOfWealth
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
                                     title=" Annual Income"
                                     content={
                                         !data?.employeeStatus?.annualIncome ||
@@ -566,6 +835,84 @@ export default function AccountRequest() {
                                             ? "---"
                                             : data?.employeeStatus
                                                   ?.natureOfBusiness
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+
+                        <h2 className="text-lg mb-8 centered-line">
+                            Social Media
+                        </h2>
+
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" linkedIn"
+                                    content={
+                                        !data?.socialMedia?.linkedIn ||
+                                        data?.socialMedia?.linkedIn ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.socialMedia?.linkedIn
+                                    }
+                                />
+                            </Skeleton>
+
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Facebook"
+                                    content={
+                                        !data?.socialMedia?.facebook ||
+                                        data?.socialMedia?.facebook ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.socialMedia?.facebook
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Instagram"
+                                    content={
+                                        !data?.socialMedia?.instagram ||
+                                        data?.socialMedia?.instagram ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.socialMedia?.instagram
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Tiktok"
+                                    content={
+                                        !data?.socialMedia?.tiktok ||
+                                        data?.socialMedia?.tiktok == "undefined"
+                                            ? "---"
+                                            : data?.socialMedia?.tiktok
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Twitter"
+                                    content={
+                                        !data?.socialMedia?.twitter ||
+                                        data?.socialMedia?.twitter ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.socialMedia?.twitter
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Thread"
+                                    content={
+                                        !data?.socialMedia?.thread ||
+                                        data?.socialMedia?.thread == "undefined"
+                                            ? "---"
+                                            : data?.socialMedia?.thread
                                     }
                                 />
                             </Skeleton>
@@ -628,12 +975,94 @@ export default function AccountRequest() {
                                 />
                             </Skeleton>
                         </div>
+                        <h2 className="text-lg mb-8 centered-line">
+                            Identification Card
+                        </h2>
+
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Virtual NIN"
+                                    content={
+                                        !data?.idDetail?.vnin ||
+                                        data?.idDetail?.vnin == "undefined"
+                                            ? "---"
+                                            : data?.idDetail?.vnin
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" ID Number"
+                                    content={
+                                        !data?.idDetail?.idNo ||
+                                        data?.idDetail?.idNo == "undefined"
+                                            ? "---"
+                                            : data?.idDetail?.idNo
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="ID Type "
+                                    content={
+                                        !data?.idDetail?.idType ||
+                                        data?.idDetail?.idType == "undefined"
+                                            ? "---"
+                                            : data?.idDetail?.idType
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Issue Date "
+                                    content={
+                                        !data?.idDetail?.issueDate ||
+                                        data?.idDetail?.issueDate == "undefined"
+                                            ? "---"
+                                            : data?.idDetail?.issueDate
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Expiry Date"
+                                    content={
+                                        !data?.idDetail?.expiryDate ||
+                                        data?.idDetail?.expiryDate ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.idDetail?.expiryDate
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+
+                        <h2 className="text-lg mb-8 centered-line">
+                            Notification Detaiils{" "}
+                        </h2>
+
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Notification Preference"
+                                    content={
+                                        data?.notificationPreference !==
+                                        undefined
+                                            ? data?.notificationPreference
+                                            : "---"
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+
                         <div className="mb-14 ">
                             <div className="pr-10 centered-line bg-white mb-8">
                                 <h2 className="text-lg mb-4 ">
                                     Means of Identification
                                 </h2>
                             </div>
+
                             <Skeleton visible={isLoading}>
                                 {selectedIds.length > 0 && (
                                     <div className="flex justify-end gap-6 mb-6">
@@ -670,7 +1099,11 @@ export default function AccountRequest() {
                                             ?.filter(
                                                 (item) =>
                                                     item.documentType !==
-                                                    "DIASPORA"
+                                                        "DIASPORA" &&
+                                                    (item.documentStatus ===
+                                                        "PENDING" ||
+                                                        item.documentStatus ===
+                                                            "Accepted")
                                             )
                                             .map((item, index) => (
                                                 <DocumentRow
@@ -738,38 +1171,102 @@ export default function AccountRequest() {
                                 </tbody>
                             </table>
                         </div>
+                        <div>
+                            <h2 className="text-lg mb-8 centered-line">
+                                Rejected Documents
+                            </h2>
+                            <table className="w-full bg-gray-50">
+                                <tbody>
+                                    {data?.documents
+                                        ?.filter(
+                                            (item) =>
+                                                item.documentType !==
+                                                    "DIASPORA" &&
+                                                item.documentStatus ===
+                                                    "Rejected"
+                                        )
+                                        .map((item, index) => (
+                                            <DocumentRow
+                                                key={index}
+                                                data={{
+                                                    id: item.documentId as string,
+                                                    documentType:
+                                                        item.documentType as string,
+                                                    documentStatus:
+                                                        item.documentStatus,
+                                                    documentComment:
+                                                        item.documentComment as string,
+                                                    link: item.filePath,
+                                                }}
+                                                isChecked={selectedIds.includes(
+                                                    item.documentId
+                                                )}
+                                                toggleSelection={selectDocument}
+                                                onView={(args) =>
+                                                    setDocument(args)
+                                                }
+                                            />
+                                        ))}
+                                </tbody>
+                            </table>
+                            <div className="mt-10">
+                                <h2 className="text-lg mb-8 centered-line">
+                                    Final Status
+                                </h2>
+                                <div className="flex mx-auto">
+                                    <button
+                                        className="p-4 bg-red-500 w-28 text-white rounded-lg mr-10 "
+                                        onClick={() =>
+                                            handleRejectClick("Rejected")
+                                        }
+                                    >
+                                        Reject
+                                    </button>
+
+                                    <button
+                                        className="p-4 bg-blue-500 w-28 text-white rounded-lg "
+                                        onClick={() =>
+                                            handleAcceptClick("Accepted")
+                                        }
+                                    >
+                                        Accept
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </main>
                 )}
-          
-      
-          <Modal
-  opened={!!document}
-  onClose={() => setDocument(null)}
-  className="w-full"
-  size="lg"
->
-  {document && (
-    <>
-      {!isImgLoaded && <Loader size={24} />}
-      {document.toLowerCase().endsWith(".pdf") ? (
-        <div>
-          <iframe src={document} title="PDF Document" width="100%" height="500" />
-          <a
-            href={document}
-            download="document.pdf"
-            className="bg-blue-500 py-3 px-2 rounded-md text-white block text-center text-lg font-semibold hover:bg-blue-600 transition-colors duration-300 mx-40 my-5"
 
-          >
-            Download PDF
-          </a>
-        </div>
-      ) : (
-        <img src={document} alt="" />
-      )}
-    </>
-  )}
-</Modal>
-              
+                <Modal
+                    opened={!!document}
+                    onClose={() => setDocument(null)}
+                    className="w-full"
+                    size="lg"
+                >
+                    {document && (
+                        <>
+                            {document.toLowerCase().endsWith(".pdf") ? (
+                                <div>
+                                    <iframe
+                                        src={document}
+                                        title="PDF Document"
+                                        width="100%"
+                                        height="500"
+                                    />
+                                    <a
+                                        href={document}
+                                        download="document.pdf"
+                                        className="bg-blue-500 py-3 px-2 rounded-md text-white block text-center text-lg font-semibold hover:bg-blue-600 transition-colors duration-300 mx-40 my-5"
+                                    >
+                                        Download PDF
+                                    </a>
+                                </div>
+                            ) : (
+                                <img src={document} alt="" />
+                            )}
+                        </>
+                    )}
+                </Modal>
             </div>
 
             <Modal
@@ -783,18 +1280,20 @@ export default function AccountRequest() {
                 <Controller
                     name="documentComment"
                     control={methods.control}
-                    render={({ field: { value, ...restField } }) => {
-                        setComment(value)
-                        return (
-                            <textarea
-                                {...restField}
-                                value={value as string}
-                                className="w-full bg-gray-100 p-4 resize-none"
-                                rows={10}
-                            />
-                        )
-                    }}
+                    render={({ field: { onChange, value, ...restField } }) => (
+                        <textarea
+                            {...restField}
+                            value={value as string}
+                            className="w-full bg-gray-100 p-4 resize-none"
+                            rows={10}
+                            onChange={(e) => {
+                                onChange(e.target.value) // Update the value in the form
+                                setComment(e.target.value) // Update the comment state
+                            }}
+                        />
+                    )}
                 />
+
                 <div className="flex items-center gap-6 mt-6">
                     <Button
                         variant="outline"
@@ -808,7 +1307,10 @@ export default function AccountRequest() {
                         variant="primary"
                         className="w-fit"
                         onClick={methods.handleSubmit((e) => {
+                            // Clear the comment state
                             handleSubmit(e, "Rejected")
+                            setComment("")
+                            dispatch({ type: "CLOSE_MODAL" })
                         })}
                     >
                         Confirm Rejection
@@ -828,7 +1330,9 @@ export default function AccountRequest() {
                     <Button
                         variant="outline"
                         className="border border-gray-300 w-20"
-                        onClick={() => dispatch({ type: "CLOSE_MODAL" })}
+                        onClick={() => {
+                            dispatch({ type: "CLOSE_MODAL" })
+                        }}
                     >
                         Cancel
                     </Button>
@@ -836,9 +1340,11 @@ export default function AccountRequest() {
                         type="button"
                         variant="primary"
                         className="w-20"
-                        onClick={methods.handleSubmit((e) =>
+                        onClick={methods.handleSubmit((e) => {
                             handleSubmit(e, "Accepted")
-                        )}
+                            setComment("Accepted") // Set the comment state to "Accepted"
+                            dispatch({ type: "CLOSE_MODAL" }) // Close the modal
+                        })}
                     >
                         Confirm
                     </Button>

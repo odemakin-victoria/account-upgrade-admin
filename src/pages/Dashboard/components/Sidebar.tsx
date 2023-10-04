@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { SidebarOption } from "./types"
-import { AiOutlineUser, AiOutlineArrowUp, AiOutlineMenu } from "react-icons/ai"
+import { AiOutlineUser, AiOutlineArrowUp,   } from "react-icons/ai"
 import { useRequestTypeContext } from "@/utils/request.context"
 
 
@@ -34,8 +34,7 @@ const Sidebar: React.FC = () => {
                     }   `}
                 >
                     <ul>
-                        {/* sm:w-full */}
-                        <li className=""> 
+                        {/* <li className=""> 
                             <button
                             // sm:py-0 sm:px-2 sm:w-full
                                 className={`lg:py-3 lg:px-8 mb-4 w-full sm:py-0 sm:px-2 sm:w-full ${
@@ -50,7 +49,7 @@ const Sidebar: React.FC = () => {
                                 <AiOutlineUser className="mr-2 font-bold text-2xl text-blue-500 cursor-pointer" />
                                 <span>Account Update</span>
                             </button>
-                        </li>
+                        </li> */}
                         <li>
                             <button
                                 className={`py-3 px-8 mb-10  w-full ${

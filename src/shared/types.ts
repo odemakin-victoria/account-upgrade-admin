@@ -12,7 +12,9 @@ export interface ApiResponse<T> {
  * Represents the response structure for an account request.
  */
 export interface AccountRequestResponse {
+    notificationPreference: string | undefined;
     accountNumber: string
+    toScreen: string; 
     RequestType: string
     updateStatus: string
     bvn: string 
@@ -22,6 +24,8 @@ export interface AccountRequestResponse {
     employeeStatus: EmployeeStatus
     contactAddress: contactAddress
     citizenship:citizenship
+    socialMedia:socialMedia
+    idDetail:idDetail
     createdAt: string
     documents: AccountDocumentResponse[]
 }
@@ -49,6 +53,12 @@ export interface CustomerDocumentMultiple {
     email?: string
     status?: string
     comment: string
+    documentId: string[]
+   
+}
+export interface CustomerStatusUpdate {
+    status: string
+  
    
 }
 
@@ -56,6 +66,7 @@ export interface CustomerDocumentMultiple {
  * Represents an account document with additional response-specific properties.
  */
 export interface AccountDocumentResponse extends Document {
+    someConditionToBeRejected: any
     documentId: string
     filePath: string
     createdAt: string
@@ -108,11 +119,13 @@ export interface personalDetails {
     personalDetailsId: string
     title: string
     maritalStatus: string
+    otherReasons:string
     motherMaidenName: string
     firstName: string
     lastName: string
     middleName: string
     dateOfBirth: string
+    purposeOfAccount:string
     createdAt: Date
     updatedAt: Date
 }
@@ -135,13 +148,35 @@ export interface NextOfKin {
 export interface EmployeeStatus {
     employmentStatus: string
     employersName: string
+    employersAddress:string
     natureOfBusiness: string
     numbersofYears: string
     annualIncome: string
+    sourceOfWealth:string
     createdAt?: Date
     updatedAt?: Date
 }
-
+export interface socialMedia {
+    customerId?: string
+    linkedIn: string
+    facebook: string
+    instagram:string
+    tiktok: string
+    twitter:string
+    thread:string,
+    createdAt?: Date
+    updatedAt?: Date
+}
+export interface idDetail {
+    customerId?: string
+    vnin: string
+    idNo: string
+    idType:string
+    issueDate: string
+    expiryDate:string
+    createdAt?: Date
+    updatedAt?: Date
+}
 export interface citizenship {
     foreignTaxId: string
     countryTaxResidence: string

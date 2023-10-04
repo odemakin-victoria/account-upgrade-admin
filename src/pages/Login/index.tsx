@@ -15,6 +15,30 @@ import headerOptimusLogo from "@/shared/assets/images/Optimus_Logo.svg"
 import { notifications } from "@mantine/notifications"
 
 
+function caesarEncrypt(text: string, shift: number): string {
+    return text
+        .split('')
+        .map(char => {
+            if (char.match(/[a-z]/i)) {
+                const code = char.charCodeAt(0);
+                let shiftAmount = shift % 26;
+                if (char.match(/[A-Z]/)) {
+                    if (code + shiftAmount > 90) {
+                        shiftAmount -= 26;
+                    }
+                    return String.fromCharCode(code + shiftAmount);
+                } else if (char.match(/[a-z]/)) {
+                    if (code + shiftAmount > 122) {
+                        shiftAmount -= 26;
+                    }
+                    return String.fromCharCode(code + shiftAmount);
+                }
+            }
+            return char;
+        })
+        .join('');
+}
+
 
 export default function Login() {
     UsePageTitle("Login")
@@ -38,29 +62,31 @@ export default function Login() {
 
 
     const handleSubmit = async (data: {
-        username: string
-        password: string
+        username: string;
+        password: string;
     }) => {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
+            // Encrypt the username and password
+            const encryptedUsername = caesarEncrypt(data.username, 3); // Encrypt with a Caesar cipher (3 shifts)
+            const encryptedPassword = caesarEncrypt(data.password, 3); // Encrypt with a Caesar cipher (3 shifts)
+    
             const response = await loginRequest.mutateAsync({
-                username: data.username,
-                password: data.password,
-            })
-
-            if (response.responseCode == "00") {
-                
+                username: encryptedUsername,
+                password: encryptedPassword,
+            });
+    
+            if (response.responseCode === "00") {
                 auth.login({
                     username: data.username,
                     password: data.password,
                     callback: () => {
-                        navigate(`${DASHBOARD_ROUTE}`)
-                        setIsLoading(false)
+                        navigate(`${DASHBOARD_ROUTE}`);
+                        setIsLoading(false);
                     },
-                })
+                });
             } else {
                 setIsLoading(false);
-                
             }
         } catch (error) {
             setIsLoading(false);
@@ -85,7 +111,7 @@ export default function Login() {
                 autoClose: 5000,
             });
         }
-    }
+    };
     // const handleSubmit = async (data: { username: string; password: string }) => {
 
     //   setIsLoading(true)

@@ -1,3 +1,5 @@
+import { useRequestTypeContext } from "@/utils/request.context"
+
 type ModalType = "AMEND" | "REJECT" | "ACCEPT";
 
 // Define the state type for the reducer
@@ -26,12 +28,14 @@ export function reducer(state: ModalState, action: ActionType):ModalState {
 
 
 
-export function mapItemName(itemName:string) {
-  const mapping:{[key:string]:string} = {
-    IDENTIFICATION: 'National ID',
-    PROOFOFADDRESS: 'Proof of Address',
-    SIGNATURE: 'Signature',
-    CUSTOMERPHOTO: 'Photo'
+export function mapItemName(itemName: string) {
+  const { requestType } = useRequestTypeContext();
+
+  const mapping: { [key: string]: string } = {
+    IDENTIFICATION: requestType === 'update' ? 'Marriage Certificate' : 'National ID',
+    PROOFOFADDRESS: requestType === 'update' ? 'Additional Documents' : 'Proof of Address',
+    SIGNATURE:  'Signature',
+    CUSTOMERPHOTO: requestType === 'update' ? 'Birth Certificate' : 'Photo',
   };
 
   return mapping[itemName] || itemName;
