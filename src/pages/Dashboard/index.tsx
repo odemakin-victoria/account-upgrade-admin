@@ -43,9 +43,9 @@ export default function Dashboard() {
 
     const navigate = useNavigate()
     const auth = useAuthContext()
-    const [activeTab, setActiveTab] = useState<string>("accepted") // Initial active tab
+    const [activeTab, setActiveTab] = useState<string>("pending") // Initial active tab
     const [showPassword, setShowPassword] = useState(false) // State to control password visibility
-
+    console.log(auth.user, "the auth user in dashboard")
     useEffect(() => {
         if (debounced) {
             refetch({ cancelRefetch: true })
@@ -107,8 +107,6 @@ export default function Dashboard() {
             return [mappedArray, 0]
         }
     }
-
-    
 
     const handleNumberOfItemsToShow = (item: Document[], name?: string) => {
         let arr
@@ -285,68 +283,63 @@ export default function Dashboard() {
                         ) : (
                             <tbody>
                                 {filteredData.length > 0 ? (
-                                    filteredData
-                                      
-                                        .map((item, index) => (
-                                            <Table.TableRow
-                                                key={index}
-                                                onClick={() =>
-                                                    navigate(
-                                                        `${DASHBOARD_ROUTE}/view-account/${item.accountNumber}`
-                                                    )
-                                                }
-                                            >
-                                                <Table.TableBodyCell>
-                                                    <Skeleton
-                                                        visible={isLoading}
-                                                    >
-                                                        {item.accountNumber}
-                                                    </Skeleton>
-                                                </Table.TableBodyCell>
+                                    filteredData.map((item, index) => (
+                                        <Table.TableRow
+                                            key={index}
+                                            onClick={() =>
+                                                navigate(
+                                                    `${DASHBOARD_ROUTE}/view-account/${item.accountNumber}`
+                                                )
+                                            }
+                                        >
+                                            <Table.TableBodyCell>
+                                                <Skeleton visible={isLoading}>
+                                                    {item.accountNumber}
+                                                </Skeleton>
+                                            </Table.TableBodyCell>
 
-                                                {requestType !== "upgrade" && (
-                                                    <Table.TableBodyCell>
-                                                        {`${
-                                                            item.personalDetails
-                                                                ?.firstName ??
-                                                            ""
-                                                        } ${
-                                                            item.personalDetails
-                                                                ?.lastName ?? ""
-                                                        }`}
-                                                    </Table.TableBodyCell>
-                                                )}
-                                                {requestType !== "update" && (
-                                                    <Table.TableBodyCell>
-                                                        {item.bvn}
-                                                    </Table.TableBodyCell>
-                                                )}
+                                            {requestType !== "upgrade" && (
                                                 <Table.TableBodyCell>
-                                                    {
+                                                    {`${
                                                         item.personalDetails
-                                                            ?.maritalStatus
-                                                    }
+                                                            ?.firstName ?? ""
+                                                    } ${
+                                                        item.personalDetails
+                                                            ?.lastName ?? ""
+                                                    }`}
                                                 </Table.TableBodyCell>
-
+                                            )}
+                                            {requestType !== "update" && (
                                                 <Table.TableBodyCell>
-                                                    {handleNumberOfItemsToShow(
-                                                        item.documents
-                                                    ) ?? "---"}
+                                                    {item.bvn}
                                                 </Table.TableBodyCell>
+                                            )}
+                                            <Table.TableBodyCell>
+                                                {
+                                                    item.personalDetails
+                                                        ?.maritalStatus
+                                                }
+                                            </Table.TableBodyCell>
 
-                                                <Table.TableBodyCell className="flex items-center  gap-4">
-                                                    {handleNumberOfItemsToShow(
-                                                        item.documents,
-                                                        "DIASPORA"
-                                                    ) ?? "---"}
-                                                </Table.TableBodyCell>
-                                                <Table.TableBodyCell>
-                                                    {dayjs(
-                                                        item.createdAt
-                                                    ).format("LLL")}{" "}
-                                                </Table.TableBodyCell>
-                                            </Table.TableRow>
-                                        ))
+                                            <Table.TableBodyCell>
+                                                {handleNumberOfItemsToShow(
+                                                    item.documents
+                                                ) ?? "---"}
+                                            </Table.TableBodyCell>
+
+                                            <Table.TableBodyCell className="flex items-center  gap-4">
+                                                {handleNumberOfItemsToShow(
+                                                    item.documents,
+                                                    "DIASPORA"
+                                                ) ?? "---"}
+                                            </Table.TableBodyCell>
+                                            <Table.TableBodyCell>
+                                                {dayjs(item.createdAt).format(
+                                                    "LLL"
+                                                )}{" "}
+                                            </Table.TableBodyCell>
+                                        </Table.TableRow>
+                                    ))
                                 ) : allData && allData?.data?.length > 0 ? (
                                     (
                                         allData?.data as unknown as AccountRequestResponse[]

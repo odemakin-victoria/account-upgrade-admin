@@ -38,6 +38,7 @@ export const useLoginRequest = () => {
             statusCode: number
             message: "string"
             data: string
+          
         }>,
         { username: string; password: string }
     >("login", ({ username, password }) => request({ username, password }))

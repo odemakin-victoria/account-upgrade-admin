@@ -34,7 +34,7 @@ const Sidebar: React.FC = () => {
                     }   `}
                 >
                     <ul>
-                        {/* <li className=""> 
+                        <li className=""> 
                             <button
                             // sm:py-0 sm:px-2 sm:w-full
                                 className={`lg:py-3 lg:px-8 mb-4 w-full sm:py-0 sm:px-2 sm:w-full ${
@@ -49,7 +49,7 @@ const Sidebar: React.FC = () => {
                                 <AiOutlineUser className="mr-2 font-bold text-2xl text-blue-500 cursor-pointer" />
                                 <span>Account Update</span>
                             </button>
-                        </li> */}
+                        </li>
                         <li>
                             <button
                                 className={`py-3 px-8 mb-10  w-full ${

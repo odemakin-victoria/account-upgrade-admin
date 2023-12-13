@@ -1,12 +1,16 @@
-import { Modal, Group, Button, ModalProps } from '@mantine/core';
-import { ReactNode } from 'react';
+import React from 'react';
+import { Modal, ModalProps as MantineModalProps } from '@mantine/core';
 
-export default function CustomModal({ children,...rest}:ModalProps) {
-  return (
-
-    <Modal  withCloseButton={false} {...rest}>
-        {children}
-      </Modal>
-
-  )
+interface CustomModalProps extends Omit<MantineModalProps, 'opened'> {
+  isOpen: boolean;
 }
+
+const CustomModal: React.FC<CustomModalProps> = ({ isOpen, children, ...rest }) => {
+  return (
+    <Modal opened={isOpen} withCloseButton={false} {...rest}>
+      {children}
+    </Modal>
+  );
+};
+
+export default CustomModal;

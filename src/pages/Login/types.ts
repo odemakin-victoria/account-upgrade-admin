@@ -1,8 +1,9 @@
 export interface LoginResponse {
     accessToken: string;
     email: string;
-    displayName: string;
+    referenceId: string;
     lastName: string;
     middleName: string;
     name: string;
+    displayName:string
   }

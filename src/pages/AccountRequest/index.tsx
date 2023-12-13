@@ -64,11 +64,17 @@ export default function AccountRequest() {
     const handleRejectClick = (status: "Accepted" | "Rejected") => {
         // Assuming mutateHandler returns void
         mutateHandler(status)
+        setTimeout(() => {
+            navigate(DASHBOARD_ROUTE) // Navigate to dashboard after 3000ms (3 seconds)
+        }, 2000)
     }
 
     const handleAcceptClick = (status: "Accepted" | "Rejected") => {
         // Assuming mutateHandler returns void
         mutateHandler(status)
+        setTimeout(() => {
+            navigate(DASHBOARD_ROUTE) // Navigate to dashboard after 3000ms (3 seconds)
+        }, 2000)
     }
 
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -228,10 +234,91 @@ export default function AccountRequest() {
                         <h2 className="text-lg mb-8 centered-line">
                             Employment Details{" "}
                         </h2>
-                        <div className="grid grid-cols-2 gap-6 gap-x-6">
+                        <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
-                                    title=" Employmer's Name"
+                                    title=" Employment Status"
+                                    content={
+                                        !data?.employeeStatus
+                                            ?.employmentStatus ||
+                                        data?.employeeStatus
+                                            ?.employmentStatus == "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employmentStatus
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employer's Name"
+                                    content={
+                                        !data?.employeeStatus?.employersName ||
+                                        data?.employeeStatus?.employersName ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employersName
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Numbers of Years in Employment"
+                                    content={
+                                        !data?.employeeStatus?.numbersofYears ||
+                                        data?.employeeStatus?.numbersofYears ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.numbersofYears
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Source of Wealth"
+                                    content={
+                                        !data?.employeeStatus?.sourceOfWealth ||
+                                        data?.employeeStatus?.sourceOfWealth ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.sourceOfWealth
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Annual Income"
+                                    content={
+                                        !data?.employeeStatus?.annualIncome ||
+                                        data?.employeeStatus?.annualIncome ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus?.annualIncome
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Nature Of Business"
+                                    content={
+                                        !data?.employeeStatus
+                                            ?.natureOfBusiness ||
+                                        data?.employeeStatus
+                                            ?.natureOfBusiness == "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.natureOfBusiness
+                                    }
+                                />
+                            </Skeleton>
+                        </div>
+                        {/* <div className="grid grid-cols-2 gap-6 gap-x-6">
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employer's Name"
                                     content={
                                         !data?.employeeStatus?.employersName ||
                                         data?.employeeStatus?.employersName ==
@@ -256,9 +343,9 @@ export default function AccountRequest() {
                                     }
                                 />
                             </Skeleton>
-                        </div>
+                        </div> */}
                         <h2 className="text-lg mb-8 centered-line mt-10">
-                            Notification Detaiils{" "}
+                            Notification Details{" "}
                         </h2>
 
                         <Skeleton visible={isLoading}>
@@ -429,18 +516,36 @@ export default function AccountRequest() {
                                 </h2>
                                 <div className="flex mx-auto">
                                     <button
-                                        className="p-4 bg-red-500 w-28 text-white rounded-lg mr-10 "
+                                        className={`p-4 ${
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
+                                                ? "bg-gray-400"
+                                                : "bg-red-500"
+                                        } w-28 text-white rounded-lg mr-10`}
                                         onClick={() =>
                                             handleRejectClick("Rejected")
+                                        }
+                                        disabled={
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
                                         }
                                     >
                                         Reject
                                     </button>
 
                                     <button
-                                        className="p-4 bg-blue-500 w-28 text-white rounded-lg "
+                                        className={`p-4 ${
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
+                                                ? "bg-gray-400"
+                                                : "bg-blue-500"
+                                        } w-28 text-white rounded-lg`}
                                         onClick={() =>
                                             handleAcceptClick("Accepted")
+                                        }
+                                        disabled={
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
                                         }
                                     >
                                         Accept
@@ -479,7 +584,7 @@ export default function AccountRequest() {
                                     This Customer's country{" "}
                                     {data?.contactAddress.country}{" "}
                                     classification falls under the Category C ,
-                                    kindly restricted  account and contact
+                                    kindly restricted account and contact
                                     Compliance to take appropriate step.
                                 </div>
                             ) : (
@@ -560,7 +665,7 @@ export default function AccountRequest() {
                                         }
                                     />
                                 </Skeleton>
-                              
+
                                 <Skeleton visible={isLoading}>
                                     <DrawerCell
                                         title="Mother's Maiden Name"
@@ -601,9 +706,10 @@ export default function AccountRequest() {
                                     <DrawerCell
                                         title="Other Reason"
                                         content={
-                                            data?.personalDetails?.otherReasons !==
-                                            undefined
-                                                ? data?.personalDetails?.otherReasons
+                                            data?.personalDetails
+                                                ?.otherReasons !== undefined
+                                                ? data?.personalDetails
+                                                      ?.otherReasons
                                                 : "---"
                                         }
                                     />
@@ -712,16 +818,14 @@ export default function AccountRequest() {
                                     }
                                 />
                             </Skeleton>
+
                             <Skeleton visible={isLoading}>
-                                <DrawerCell
-                                    title="State of Next of Kin"
-                                    content={
-                                        !data?.nextOfKin?.state ||
-                                        data?.nextOfKin?.state == "undefined"
-                                            ? data?.contactAddress?.state
-                                            : data?.nextOfKin?.state
-                                    }
-                                />
+                            <DrawerCell
+    title="State of Next of Kin"
+    content={data?.nextOfKin?.state || data?.contactAddress?.state}
+/>
+
+
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
@@ -775,7 +879,7 @@ export default function AccountRequest() {
                             </Skeleton>
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
-                                    title=" Employmer's Name"
+                                    title=" Employer's Name"
                                     content={
                                         !data?.employeeStatus?.employersName ||
                                         data?.employeeStatus?.employersName ==
@@ -812,6 +916,7 @@ export default function AccountRequest() {
                                     }
                                 />
                             </Skeleton>
+
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title=" Annual Income"
@@ -821,6 +926,20 @@ export default function AccountRequest() {
                                             "undefined"
                                             ? "---"
                                             : data?.employeeStatus?.annualIncome
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title=" Employers Address"
+                                    content={
+                                        !data?.employeeStatus
+                                            ?.employersAddress ||
+                                        data?.employeeStatus
+                                            ?.employersAddress == "undefined"
+                                            ? "---"
+                                            : data?.employeeStatus
+                                                  ?.employersAddress
                                     }
                                 />
                             </Skeleton>
@@ -919,10 +1038,22 @@ export default function AccountRequest() {
                         </div>
 
                         <h2 className="text-lg mb-8 centered-line">
-                            Other Citizenship
+                            FATCA/CRS
                         </h2>
 
                         <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
+                            <Skeleton visible={isLoading}>
+                            <DrawerCell
+    title="Fatca Accepted"
+    content={
+        data?.citizenship?.fatcaAccepted !== null
+            ? data?.citizenship?.fatcaAccepted.toString()
+            : "---"
+    }
+/>
+
+                            </Skeleton>
+
                             <Skeleton visible={isLoading}>
                                 <DrawerCell
                                     title=" Foreign Tax Id"
@@ -974,7 +1105,35 @@ export default function AccountRequest() {
                                     }
                                 />
                             </Skeleton>
+
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="Reason for not being able to obtain TIN Reason B only"
+                                    content={
+                                        !data?.citizenship?.noReasonCause ||
+                                        data?.citizenship?.noReasonCause ==
+                                            "undefined"
+                                            ? "---"
+                                            : data?.citizenship?.noReasonCause
+                                    }
+                                />
+                            </Skeleton>
+                            <Skeleton visible={isLoading}>
+                                <DrawerCell
+                                    title="  Reason for No TIN "
+                                    content={
+                                        !data?.citizenship
+                                            ?.noReasonForTinClass ||
+                                        data?.citizenship
+                                            ?.noReasonForTinClass == "undefined"
+                                            ? "---"
+                                            : data?.citizenship
+                                                  ?.noReasonForTinClass
+                                    }
+                                />
+                            </Skeleton>
                         </div>
+
                         <h2 className="text-lg mb-8 centered-line">
                             Identification Card
                         </h2>
@@ -1039,7 +1198,7 @@ export default function AccountRequest() {
                         </div>
 
                         <h2 className="text-lg mb-8 centered-line">
-                            Notification Detaiils{" "}
+                            Notification Details{" "}
                         </h2>
 
                         <div className="grid grid-cols-2 gap-6 gap-x-6 mb-10">
@@ -1215,18 +1374,36 @@ export default function AccountRequest() {
                                 </h2>
                                 <div className="flex mx-auto">
                                     <button
-                                        className="p-4 bg-red-500 w-28 text-white rounded-lg mr-10 "
+                                        className={`p-4 ${
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
+                                                ? "bg-gray-400"
+                                                : "bg-red-500"
+                                        } w-28 text-white rounded-lg mr-10`}
                                         onClick={() =>
                                             handleRejectClick("Rejected")
+                                        }
+                                        disabled={
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
                                         }
                                     >
                                         Reject
                                     </button>
 
                                     <button
-                                        className="p-4 bg-blue-500 w-28 text-white rounded-lg "
+                                        className={`p-4 ${
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
+                                                ? "bg-gray-400"
+                                                : "bg-blue-500"
+                                        } w-28 text-white rounded-lg`}
                                         onClick={() =>
                                             handleAcceptClick("Accepted")
+                                        }
+                                        disabled={
+                                            data?.status === "Accepted" ||
+                                            data?.status === "Rejected"
                                         }
                                     >
                                         Accept
@@ -1238,7 +1415,7 @@ export default function AccountRequest() {
                 )}
 
                 <Modal
-                    opened={!!document}
+                    isOpen={!!document}
                     onClose={() => setDocument(null)}
                     className="w-full"
                     size="lg"
@@ -1270,7 +1447,7 @@ export default function AccountRequest() {
             </div>
 
             <Modal
-                opened={modalState.modalType === "REJECT"}
+                isOpen={modalState.modalType === "REJECT"}
                 onClose={() => dispatch({ type: "CLOSE_MODAL" })}
                 size={500}
             >
@@ -1318,7 +1495,7 @@ export default function AccountRequest() {
                 </div>
             </Modal>
             <Modal
-                opened={modalState.modalType === "ACCEPT"}
+                isOpen={modalState.modalType === "ACCEPT"}
                 onClose={() => dispatch({ type: "CLOSE_MODAL" })}
                 centered
                 size={500}

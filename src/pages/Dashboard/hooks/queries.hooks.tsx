@@ -73,6 +73,7 @@ export const useAccountRequestQuery = (accountNumber?:   string | null) => {
                 },
             }
         )
+        console.log(data, "The data in dashboard query")
         return data.data
     }
 

@@ -15,7 +15,15 @@ import {
     useState,
 } from "react"
 import { Navigate, useLocation, useNavigate } from "react-router-dom"
-
+interface DataResponse {
+    responseCode: string
+    data: {
+        accessToken: string
+        displayName: string
+        referenceId: string
+        email: string
+    }
+}
 interface AuthContextData {
     user: {
         token: string | null
@@ -28,8 +36,11 @@ interface AuthContextData {
         username: string
         password: string
         callback: () => void
-    }) => void
+    }) => DataResponse
     logout: () => void
+    setToken: (token: string) => void
+    isLoading: boolean // Add isLoading to the context data
+
 }
 
 export const AuthContext = createContext<AuthContextData>({
@@ -37,9 +48,27 @@ export const AuthContext = createContext<AuthContextData>({
         isAuthenticated: false,
         token: null,
     },
-    login: ({ ...values }) => {},
+    login: ({ ...values }): DataResponse => {
+        // Your login logic here
+        return {
+            responseCode: "exampleCode",
+            data: {
+                accessToken: "exampleToken",
+                displayName: "John Doe",
+                referenceId: "123456",
+                email: "john.doe@example.com",
+            },
+        };
+    },
+   
     logout: () => {},
+    setToken: (token: string) => {},
+    isLoading: false, // Initial value for isLoading
+
 })
+
+
+
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setIsAuthenticated] = useState<{
@@ -48,6 +77,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         displayName?: string
     } | null>(null)
     const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false); // Added loading state
+
     const loginRequest = useLoginRequest()
     const location = useLocation()
 
@@ -57,26 +88,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         username,
         password,
         callback,
-    }: {
-        username: string
-        password: string
-        callback: () => void
-    }) => {
+      }: {
+        username: string;
+        password: string;
+        callback: () => void;
+      }): Promise<DataResponse> => {
+        let res: DataResponse = {
+          responseCode: "",
+          data: {
+            accessToken: "",
+            displayName: "",
+            referenceId: "",
+            email: "",
+          },
+        };
         try {
-            const res = await loginRequest.mutateAsync({
-                username,
-                password,
-            })
+            setIsLoading(true); // Set isLoading to true before making the request
 
-            if (res.responseCode === "00") {
-                setIsAuthenticated({
-                    isAuthenticated: true,
-                    token: res.data.accessToken,
-                    displayName: res.data.displayName,
-                })
-                callback()
-            }
-        } catch (error: any) {
+          res = await loginRequest.mutateAsync({
+            username,
+            password,
+          });
+    
+          if (res.responseCode === "00") {
+            console.log("I have been authenticated!");
+            setIsAuthenticated({
+              isAuthenticated: true,
+              token: res.data.accessToken,
+              displayName: res.data.displayName,
+            });
+            callback();
+          }
+        }
+        catch (error: any) {
             notifications.show({
                 title: "Error!",
                 message:
@@ -100,7 +144,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 withCloseButton: false,
                 autoClose: 5000,
             })
-        }
+        } finally {
+            setIsLoading(false); // Set isLoading to false after the request is complete, regardless of success or error
+          }
+        console.log(res, "to see if it contains data")
+        return res
     }
 
     const logout = () => {
@@ -110,11 +158,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         })
         navigate("/")
     }
-
+    const setToken = (token: string) => {
+        setIsAuthenticated({
+            isAuthenticated: true,
+            token: token,
+        })
+    }
     const value = {
         user,
+        setToken,
         login,
         logout,
+        isLoading, // Include isLoading in the context value
+
     }
 
     // Add a response interceptor
@@ -143,7 +199,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return response
         },
         (error) => {
-            // console.log("called", error)
+            console.log("the error caught called", error)
 
             // console.log("error -- adminInstance", error.response.status)
             // Check if the error response indicates that the user should be logged out
@@ -160,7 +216,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!user && protectedRoute.includes(location.pathname) ? (
+            {!user?.isAuthenticated &&
+            protectedRoute.includes(location.pathname) ? (
                 <Navigate to="/" state={{ from: location }} replace />
             ) : (
                 children

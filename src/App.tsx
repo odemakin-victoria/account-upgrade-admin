@@ -3,10 +3,12 @@ import { AuthProvider } from "@/utils/auth.context"
 import { Routes, Route, BrowserRouter } from "react-router-dom"
 import AccountRequest from "./pages/AccountRequest"
 import Dashboard from "./pages/Dashboard"
+import ValidateOtpScreen from "./pages/Login/ValidateOtp"
 import {
     ROOT_ROUTE,
     DASHBOARD_ROUTE,
     ACCOUNT_UPDATE_REQUEST,
+    VALIDATE_OTP,
     VIEWACCOUNT,
 } from "./pages/routes-config"
 import { RequestTypeProvider } from "./utils/request.context"
@@ -18,6 +20,7 @@ function App() {
                 <RequestTypeProvider>
                     <Routes>
                         <Route path={ROOT_ROUTE} element={<Login />} />
+                        <Route path={VALIDATE_OTP} element={<ValidateOtpScreen />} />
                         <Route path={DASHBOARD_ROUTE} element={<Dashboard />} />
                         <Route
                             path={VIEWACCOUNT}

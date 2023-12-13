@@ -17,7 +17,7 @@ export default function OtpInput({
   } = useOtpHook();
 
   useEffect(() => {
-    if (inputRef.current[3].value) {
+    if (inputRef.current[5].value) {
       onCodeFilled(getOtpValues());
     }
   });
@@ -67,7 +67,26 @@ export default function OtpInput({
         onChange={handleChange}
         onFocus={() => setRefIdx(3)}
         className=" border-b-secondary text-primary h-20 text-2xl text-center focus:bg-blue-50"
-      />
+      />    <Input
+      ref={(e: HTMLInputElement) => (inputRef.current[4] = e)}
+      maxLength={1}
+      onKeyDown={onkeydown}
+      name="otp5"
+      aria-label="otp input 5"
+      onChange={handleChange}
+      onFocus={() => setRefIdx(5)}
+      className=" border-b-secondary text-primary h-auto text-2xl text-center focus:bg-blue-50"
+    />
+     <Input
+      ref={(e: HTMLInputElement) => (inputRef.current[5] = e)}
+      maxLength={1}
+      onKeyDown={onkeydown}
+      name="otp6"
+      aria-label="otp input 6"
+      onChange={handleChange}
+      onFocus={() => setRefIdx(5)}
+      className=" border-b-secondary text-primary h-auto text-2xl text-center focus:bg-blue-50"
+    />
     </div>
   );
 }

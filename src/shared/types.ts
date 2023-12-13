@@ -18,6 +18,7 @@ export interface AccountRequestResponse {
     RequestType: string
     updateStatus: string
     bvn: string 
+    status: string
     vnin: string 
     personalDetails: personalDetails
     nextOfKin: NextOfKin
@@ -182,6 +183,9 @@ export interface citizenship {
     countryTaxResidence: string
     addressLine1: string
     addressLine2: string
+    fatcaAccepted:boolean
+    noReasonForTinClass:string
+    noReasonCause:string
     createdAt?: Date
     updatedAt?: Date
 }
